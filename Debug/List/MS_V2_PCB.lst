@@ -1,6 +1,9 @@
 
-AVRASM ver. 2.1.30  G:\TAM\K\AVR\May Say V2 PCB AT32A\Debug\List\MS_V2_PCB.asm Thu Jan 11 11:57:26 2018
+AVRASM ver. 2.1.30  G:\TAM\K\AVR\May Say V2 PCB AT32A\AVR_AT32A_MS_V2\Debug\List\MS_V2_PCB.asm Thu Jan 11 16:30:48 2018
 
+G:\TAM\K\AVR\May Say V2 PCB AT32A\AVR_AT32A_MS_V2\Debug\List\MS_V2_PCB.asm(1087): warning: Register r5 already defined by the .DEF directive
+G:\TAM\K\AVR\May Say V2 PCB AT32A\AVR_AT32A_MS_V2\Debug\List\MS_V2_PCB.asm(1088): warning: Register r4 already defined by the .DEF directive
+G:\TAM\K\AVR\May Say V2 PCB AT32A\AVR_AT32A_MS_V2\Debug\List\MS_V2_PCB.asm(1089): warning: Register r7 already defined by the .DEF directive
                  
                  
                  ;CodeVisionAVR C Compiler V3.12 Advanced
@@ -1087,6 +1090,11 @@ AVRASM ver. 2.1.30  G:\TAM\K\AVR\May Say V2 PCB AT32A\Debug\List\MS_V2_PCB.asm T
                  	ADD  R31,R0
                  	.ENDM
                  
+                 ;NAME DEFINITIONS FOR GLOBAL VARIABLES ALLOCATED TO REGISTERS
+                 	.DEF _hour=R5
+                 	.DEF _minute=R4
+                 	.DEF _sec=R7
+                 
                  	.CSEG
                  	.ORG 0x00
                  
@@ -1094,8 +1102,8 @@ AVRASM ver. 2.1.30  G:\TAM\K\AVR\May Say V2 PCB AT32A\Debug\List\MS_V2_PCB.asm T
                  __START_OF_CODE:
                  
                  ;INTERRUPT VECTORS
-000000 940c 0195 	JMP  __RESET
-000002 940c 01c1 	JMP  _ext_int0_isr
+000000 940c 01a9 	JMP  __RESET
+000002 940c 01d5 	JMP  _ext_int0_isr
 000004 940c 0000 	JMP  0x00
 000006 940c 0000 	JMP  0x00
 000008 940c 0000 	JMP  0x00
@@ -1103,9 +1111,9 @@ AVRASM ver. 2.1.30  G:\TAM\K\AVR\May Say V2 PCB AT32A\Debug\List\MS_V2_PCB.asm T
 00000c 940c 0000 	JMP  0x00
 00000e 940c 0000 	JMP  0x00
 000010 940c 0000 	JMP  0x00
-000012 940c 0000 	JMP  0x00
+000012 940c 01d6 	JMP  _timer1_ovf_isr
 000014 940c 0000 	JMP  0x00
-000016 940c 01c2 	JMP  _timer0_ovf_isr
+000016 940c 0000 	JMP  0x00
 000018 940c 0000 	JMP  0x00
 00001a 940c 0000 	JMP  0x00
 00001c 940c 0000 	JMP  0x00
@@ -1455,111 +1463,134 @@ AVRASM ver. 2.1.30  G:\TAM\K\AVR\May Say V2 PCB AT32A\Debug\List\MS_V2_PCB.asm T
 000179 1111      	.DB  0x8,0x0,0x0,0x0,0x0,0x1F,0x11,0x11
 00017a 1111
 00017b 1f11      	.DB  0x11,0x11,0x11,0x1F
-                 _conv_delay_G101:
-00017c 0064
-00017d 00c8
-00017e 0190
-00017f 0320      	.DB  0x64,0x0,0xC8,0x0,0x90,0x1,0x20,0x3
-                 _bit_mask_G101:
-000180 fff8
-000181 fffc
-000182 fffe
-000183 ffff      	.DB  0xF8,0xFF,0xFC,0xFF,0xFE,0xFF,0xFF,0xFF
+                 _tbl10_G100:
+00017c 2710
+00017d 03e8
+00017e 0064
+00017f 000a      	.DB  0x10,0x27,0xE8,0x3,0x64,0x0,0xA,0x0
+000180 0001      	.DB  0x1,0x0
+                 _tbl16_G100:
+000181 1000
+000182 0100
+000183 0010
+000184 0001      	.DB  0x0,0x10,0x0,0x1,0x10,0x0,0x1,0x0
+                 _conv_delay_G102:
+000185 0064
+000186 00c8
+000187 0190
+000188 0320      	.DB  0x64,0x0,0xC8,0x0,0x90,0x1,0x20,0x3
+                 _bit_mask_G102:
+000189 fff8
+00018a fffc
+00018b fffe
+00018c ffff      	.DB  0xF8,0xFF,0xFC,0xFF,0xFE,0xFF,0xFF,0xFF
                  __glcd_mask:
-000184 0100
-000185 0703
-000186 1f0f
-000187 7f3f      	.DB  0x0,0x1,0x3,0x7,0xF,0x1F,0x3F,0x7F
-G:\TAM\K\AVR\May Say V2 PCB AT32A\Debug\List\MS_V2_PCB.asm(1207): warning: .cseg .db misalignment - padding zero byte
-000188 00ff      	.DB  0xFF
-                 _st7920_base_y_G102:
-000189 9080
-00018a 9888      	.DB  0x80,0x90,0x88,0x98
+00018d 0100
+00018e 0703
+00018f 1f0f
+000190 7f3f      	.DB  0x0,0x1,0x3,0x7,0xF,0x1F,0x3F,0x7F
+G:\TAM\K\AVR\May Say V2 PCB AT32A\AVR_AT32A_MS_V2\Debug\List\MS_V2_PCB.asm(1217): warning: .cseg .db misalignment - padding zero byte
+000191 00ff      	.DB  0xFF
+                 _st7920_base_y_G103:
+000192 9080
+000193 9888      	.DB  0x80,0x90,0x88,0x98
                  
-                 _0x2140060:
-G:\TAM\K\AVR\May Say V2 PCB AT32A\Debug\List\MS_V2_PCB.asm(1212): warning: .cseg .db misalignment - padding zero byte
-00018b 0001      	.DB  0x1
-                 _0x2140000:
-00018c 4e2d
-00018d 4e41
-00018e 4900
-00018f 464e      	.DB  0x2D,0x4E,0x41,0x4E,0x0,0x49,0x4E,0x46
-G:\TAM\K\AVR\May Say V2 PCB AT32A\Debug\List\MS_V2_PCB.asm(1215): warning: .cseg .db misalignment - padding zero byte
-000190 0000      	.DB  0x0
+                 _0x0:
+000194 3a54
+000195 3225
+000196 302e
+000197 0066      	.DB  0x54,0x3A,0x25,0x32,0x2E,0x30,0x66,0x0
+000198 006f
+000199 0043
+00019a 3a48
+00019b 3225      	.DB  0x6F,0x0,0x43,0x0,0x48,0x3A,0x25,0x32
+00019c 302e
+00019d 0066
+00019e 0025      	.DB  0x2E,0x30,0x66,0x0,0x25,0x0
+                 _0x2180060:
+G:\TAM\K\AVR\May Say V2 PCB AT32A\AVR_AT32A_MS_V2\Debug\List\MS_V2_PCB.asm(1226): warning: .cseg .db misalignment - padding zero byte
+00019f 0001      	.DB  0x1
+                 _0x2180000:
+0001a0 4e2d
+0001a1 4e41
+0001a2 4900
+0001a3 464e      	.DB  0x2D,0x4E,0x41,0x4E,0x0,0x49,0x4E,0x46
+G:\TAM\K\AVR\May Say V2 PCB AT32A\AVR_AT32A_MS_V2\Debug\List\MS_V2_PCB.asm(1229): warning: .cseg .db misalignment - padding zero byte
+0001a4 0000      	.DB  0x0
                  
                  __GLOBAL_INI_TBL:
-000191 0001      	.DW  0x01
-000192 028a      	.DW  __seed_G10A
-000193 0316      	.DW  _0x2140060*2
+0001a5 0001      	.DW  0x01
+0001a6 028a      	.DW  __seed_G10C
+0001a7 033e      	.DW  _0x2180060*2
                  
                  _0xFFFFFFFF:
-000194 0000      	.DW  0
+0001a8 0000      	.DW  0
                  
                  #define __GLOBAL_INI_TBL_PRESENT 1
                  
                  __RESET:
-000195 94f8      	CLI
-000196 27ee      	CLR  R30
-000197 bbec      	OUT  EECR,R30
+0001a9 94f8      	CLI
+0001aa 27ee      	CLR  R30
+0001ab bbec      	OUT  EECR,R30
                  
                  ;INTERRUPT VECTORS ARE PLACED
                  ;AT THE START OF FLASH
-000198 e0f1      	LDI  R31,1
-000199 bff5      	OUT  MCUCR,R31
-00019a bfe5      	OUT  MCUCR,R30
+0001ac e0f1      	LDI  R31,1
+0001ad bff5      	OUT  MCUCR,R31
+0001ae bfe5      	OUT  MCUCR,R30
                  
                  ;CLEAR R2-R14
-00019b e08d      	LDI  R24,(14-2)+1
-00019c e0a2      	LDI  R26,2
-00019d 27bb      	CLR  R27
+0001af e08d      	LDI  R24,(14-2)+1
+0001b0 e0a2      	LDI  R26,2
+0001b1 27bb      	CLR  R27
                  __CLEAR_REG:
-00019e 93ed      	ST   X+,R30
-00019f 958a      	DEC  R24
-0001a0 f7e9      	BRNE __CLEAR_REG
+0001b2 93ed      	ST   X+,R30
+0001b3 958a      	DEC  R24
+0001b4 f7e9      	BRNE __CLEAR_REG
                  
                  ;CLEAR SRAM
-0001a1 e080      	LDI  R24,LOW(__CLEAR_SRAM_SIZE)
-0001a2 e098      	LDI  R25,HIGH(__CLEAR_SRAM_SIZE)
-0001a3 e6a0      	LDI  R26,__SRAM_START
+0001b5 e080      	LDI  R24,LOW(__CLEAR_SRAM_SIZE)
+0001b6 e098      	LDI  R25,HIGH(__CLEAR_SRAM_SIZE)
+0001b7 e6a0      	LDI  R26,__SRAM_START
                  __CLEAR_SRAM:
-0001a4 93ed      	ST   X+,R30
-0001a5 9701      	SBIW R24,1
-0001a6 f7e9      	BRNE __CLEAR_SRAM
+0001b8 93ed      	ST   X+,R30
+0001b9 9701      	SBIW R24,1
+0001ba f7e9      	BRNE __CLEAR_SRAM
                  
                  ;GLOBAL VARIABLES INITIALIZATION
-0001a7 e2e2      	LDI  R30,LOW(__GLOBAL_INI_TBL*2)
-0001a8 e0f3      	LDI  R31,HIGH(__GLOBAL_INI_TBL*2)
+0001bb e4ea      	LDI  R30,LOW(__GLOBAL_INI_TBL*2)
+0001bc e0f3      	LDI  R31,HIGH(__GLOBAL_INI_TBL*2)
                  __GLOBAL_INI_NEXT:
-0001a9 9185      	LPM  R24,Z+
-0001aa 9195      	LPM  R25,Z+
-0001ab 9700      	SBIW R24,0
-0001ac f061      	BREQ __GLOBAL_INI_END
-0001ad 91a5      	LPM  R26,Z+
-0001ae 91b5      	LPM  R27,Z+
-0001af 9005      	LPM  R0,Z+
-0001b0 9015      	LPM  R1,Z+
-0001b1 01bf      	MOVW R22,R30
-0001b2 01f0      	MOVW R30,R0
+0001bd 9185      	LPM  R24,Z+
+0001be 9195      	LPM  R25,Z+
+0001bf 9700      	SBIW R24,0
+0001c0 f061      	BREQ __GLOBAL_INI_END
+0001c1 91a5      	LPM  R26,Z+
+0001c2 91b5      	LPM  R27,Z+
+0001c3 9005      	LPM  R0,Z+
+0001c4 9015      	LPM  R1,Z+
+0001c5 01bf      	MOVW R22,R30
+0001c6 01f0      	MOVW R30,R0
                  __GLOBAL_INI_LOOP:
-0001b3 9005      	LPM  R0,Z+
-0001b4 920d      	ST   X+,R0
-0001b5 9701      	SBIW R24,1
-0001b6 f7e1      	BRNE __GLOBAL_INI_LOOP
-0001b7 01fb      	MOVW R30,R22
-0001b8 cff0      	RJMP __GLOBAL_INI_NEXT
+0001c7 9005      	LPM  R0,Z+
+0001c8 920d      	ST   X+,R0
+0001c9 9701      	SBIW R24,1
+0001ca f7e1      	BRNE __GLOBAL_INI_LOOP
+0001cb 01fb      	MOVW R30,R22
+0001cc cff0      	RJMP __GLOBAL_INI_NEXT
                  __GLOBAL_INI_END:
                  
                  ;HARDWARE STACK POINTER INITIALIZATION
-0001b9 e5ef      	LDI  R30,LOW(__SRAM_END-__HEAP_SIZE)
-0001ba bfed      	OUT  SPL,R30
-0001bb e0e8      	LDI  R30,HIGH(__SRAM_END-__HEAP_SIZE)
-0001bc bfee      	OUT  SPH,R30
+0001cd e5ef      	LDI  R30,LOW(__SRAM_END-__HEAP_SIZE)
+0001ce bfed      	OUT  SPL,R30
+0001cf e0e8      	LDI  R30,HIGH(__SRAM_END-__HEAP_SIZE)
+0001d0 bfee      	OUT  SPH,R30
                  
                  ;DATA STACK POINTER INITIALIZATION
-0001bd e6c0      	LDI  R28,LOW(__SRAM_START+__DSTACK_SIZE)
-0001be e0d2      	LDI  R29,HIGH(__SRAM_START+__DSTACK_SIZE)
+0001d1 e6c0      	LDI  R28,LOW(__SRAM_START+__DSTACK_SIZE)
+0001d2 e0d2      	LDI  R29,HIGH(__SRAM_START+__DSTACK_SIZE)
                  
-0001bf 940c 01c3 	JMP  _main
+0001d3 940c 01d7 	JMP  _main
                  
                  	.ESEG
                  	.ORG 0
@@ -1573,9 +1604,6 @@ G:\TAM\K\AVR\May Say V2 PCB AT32A\Debug\List\MS_V2_PCB.asm(1215): warning: .cseg
                  ;Version : 01
                  ;Date    : 1/11/2018
                  ;Author  : AT
-                 ;Company :
-                 ;Comments:
-                 ;
                  ;
                  ;Chip type               : ATmega32A
                  ;Program type            : Application
@@ -1597,6 +1625,7 @@ G:\TAM\K\AVR\May Say V2 PCB AT32A\Debug\List\MS_V2_PCB.asm(1215): warning: .cseg
                  	.EQU __sm_adc_noise_red=0x10
                  	.SET power_ctrl_reg=mcucr
                  	#endif
+                 ;#include <stdio.h>
                  ;// I2C Bus functions
                  ;#include <i2c.h>
                  ;// DS1307 Real Time Clock functions
@@ -1614,235 +1643,427 @@ G:\TAM\K\AVR\May Say V2 PCB AT32A\Debug\List\MS_V2_PCB.asm(1215): warning: .cseg
                  ;#include "LIB/exlib.h"
                  ;// DHT library
                  ;#include <DHT.h>
-                 ;// Declare your global variables here
                  ;
+                 ;//Define ouput
+                 ;#define Q_N     PORTB.7
+                 ;#define MOTOR   PORTB.6
+                 ;#define VAN     PORTB.5
+                 ;#define DTN     PORTB.4
+                 ;#define Q_L     PORTB.3
+                 ;#define M_NEN   PORTB.2
+                 ;#define LAMP    PORTB.1
+                 ;#define DP      PORTB.0
+                 ;// Declare your global variables here
+                 ;unsigned char hour,minute,sec;
+                 ;eeprom unsigned char mTempSet;
+                 ;
+                 ;/*******************  FUNCTION  *****************************/
+                 ;void getTime();
+                 ;void tempDisplay(unsigned char x, unsigned char y);
+                 ;void timeSettingDisplay(unsigned char x, unsigned char y);
+                 ;void tempSettingDisplay(unsigned char x, unsigned char y);
+                 ;void statusDisplay(unsigned char x, unsigned char y);
+                 ;void processOn(unsigned char tempSet);
+                 ;void processOff();
+                 ;/***********************************************************/
                  ;// External Interrupt 0 service routine
                  ;interrupt [EXT_INT0] void ext_int0_isr(void)
-                 ; 0000 0028 {
+                 ; 0000 003B {
                  
                  	.CSEG
                  _ext_int0_isr:
                  ; .FSTART _ext_int0_isr
-                 ; 0000 0029 // Place your code here
-                 ; 0000 002A 
-                 ; 0000 002B }
-0001c1 9518      	RETI
+                 ; 0000 003C // Place your code here
+                 ; 0000 003D 
+                 ; 0000 003E }
+0001d5 9518      	RETI
                  ; .FEND
                  ;
-                 ;// Timer 0 overflow interrupt service routine
-                 ;interrupt [TIM0_OVF] void timer0_ovf_isr(void)
-                 ; 0000 002F {
-                 _timer0_ovf_isr:
-                 ; .FSTART _timer0_ovf_isr
-                 ; 0000 0030 // Place your code here
-                 ; 0000 0031 
-                 ; 0000 0032 }
-0001c2 9518      	RETI
+                 ;// Timer 1 overflow interrupt service routine (1.0486s)
+                 ;
+                 ;interrupt [TIM1_OVF] void timer1_ovf_isr(void)
+                 ; 0000 0043 {
+                 _timer1_ovf_isr:
+                 ; .FSTART _timer1_ovf_isr
+                 ; 0000 0044 // Place your code here
+                 ; 0000 0045 
+                 ; 0000 0046 }
+0001d6 9518      	RETI
                  ; .FEND
                  ;
                  ;void main(void)
-                 ; 0000 0035 {
+                 ; 0000 0049 {
                  _main:
                  ; .FSTART _main
-                 ; 0000 0036 // Declare your local variables here
-                 ; 0000 0037 // Variable used to store graphic display
-                 ; 0000 0038 // controller initialization data
-                 ; 0000 0039 GLCDINIT_t glcd_init_data;
-                 ; 0000 003A 
-                 ; 0000 003B // Input/Output Ports initialization
-                 ; 0000 003C // Port A initialization
-                 ; 0000 003D // Function: Bit7=Out Bit6=Out Bit5=Out Bit4=Out Bit3=In Bit2=In Bit1=In Bit0=In
-                 ; 0000 003E DDRA=(1<<DDA7) | (1<<DDA6) | (1<<DDA5) | (1<<DDA4) | (0<<DDA3) | (0<<DDA2) | (0<<DDA1) | (0<<DDA0);
-0001c3 9726      	SBIW R28,6
+                 ; 0000 004A // Declare your local variables here
+                 ; 0000 004B // Variable used to store graphic display
+                 ; 0000 004C // controller initialization data
+                 ; 0000 004D GLCDINIT_t glcd_init_data;
+                 ; 0000 004E 
+                 ; 0000 004F // Input/Output Ports initialization
+                 ; 0000 0050 // Port A initialization
+                 ; 0000 0051 // Function: Bit7=Out Bit6=Out Bit5=Out Bit4=Out Bit3=In Bit2=In Bit1=In Bit0=In
+                 ; 0000 0052 DDRA=(1<<DDA7) | (1<<DDA6) | (1<<DDA5) | (1<<DDA4) | (0<<DDA3) | (0<<DDA2) | (0<<DDA1) | (0<<DDA0);
+0001d7 9726      	SBIW R28,6
                  ;	glcd_init_data -> Y+0
-0001c4 efe0      	LDI  R30,LOW(240)
-0001c5 bbea      	OUT  0x1A,R30
-                 ; 0000 003F // State: Bit7=0 Bit6=0 Bit5=0 Bit4=0 Bit3=P Bit2=T Bit1=T Bit0=T
-                 ; 0000 0040 PORTA=(0<<PORTA7) | (0<<PORTA6) | (0<<PORTA5) | (0<<PORTA4) | (1<<PORTA3) | (0<<PORTA2) | (0<<PORTA1) | (0<<PORTA0);
-0001c6 e0e8      	LDI  R30,LOW(8)
-0001c7 bbeb      	OUT  0x1B,R30
-                 ; 0000 0041 
-                 ; 0000 0042 // Port B initialization
-                 ; 0000 0043 // Function: Bit7=Out Bit6=Out Bit5=Out Bit4=Out Bit3=Out Bit2=Out Bit1=Out Bit0=Out
-                 ; 0000 0044 DDRB=(1<<DDB7) | (1<<DDB6) | (1<<DDB5) | (1<<DDB4) | (1<<DDB3) | (1<<DDB2) | (1<<DDB1) | (1<<DDB0);
-0001c8 efef      	LDI  R30,LOW(255)
-0001c9 bbe7      	OUT  0x17,R30
-                 ; 0000 0045 // State: Bit7=0 Bit6=0 Bit5=0 Bit4=0 Bit3=0 Bit2=0 Bit1=0 Bit0=0
-                 ; 0000 0046 PORTB=(0<<PORTB7) | (0<<PORTB6) | (0<<PORTB5) | (0<<PORTB4) | (0<<PORTB3) | (0<<PORTB2) | (0<<PORTB1) | (0<<PORTB0);
-0001ca e0e0      	LDI  R30,LOW(0)
-0001cb bbe8      	OUT  0x18,R30
-                 ; 0000 0047 
-                 ; 0000 0048 // Port C initialization
-                 ; 0000 0049 // Function: Bit7=Out Bit6=Out Bit5=Out Bit4=Out Bit3=Out Bit2=Out Bit1=Out Bit0=Out
-                 ; 0000 004A DDRC=(1<<DDC7) | (1<<DDC6) | (1<<DDC5) | (1<<DDC4) | (1<<DDC3) | (1<<DDC2) | (1<<DDC1) | (1<<DDC0);
-0001cc efef      	LDI  R30,LOW(255)
-0001cd bbe4      	OUT  0x14,R30
-                 ; 0000 004B // State: Bit7=0 Bit6=0 Bit5=0 Bit4=0 Bit3=0 Bit2=0 Bit1=0 Bit0=0
-                 ; 0000 004C PORTC=(0<<PORTC7) | (0<<PORTC6) | (0<<PORTC5) | (0<<PORTC4) | (0<<PORTC3) | (0<<PORTC2) | (0<<PORTC1) | (0<<PORTC0);
-0001ce e0e0      	LDI  R30,LOW(0)
-0001cf bbe5      	OUT  0x15,R30
-                 ; 0000 004D 
-                 ; 0000 004E // Port D initialization
-                 ; 0000 004F // Function: Bit7=In Bit6=In Bit5=In Bit4=In Bit3=In Bit2=In Bit1=In Bit0=In
-                 ; 0000 0050 DDRD=(0<<DDD7) | (0<<DDD6) | (0<<DDD5) | (0<<DDD4) | (0<<DDD3) | (0<<DDD2) | (0<<DDD1) | (0<<DDD0);
-0001d0 bbe1      	OUT  0x11,R30
-                 ; 0000 0051 // State: Bit7=T Bit6=T Bit5=P Bit4=P Bit3=P Bit2=P Bit1=P Bit0=P
-                 ; 0000 0052 PORTD=(0<<PORTD7) | (0<<PORTD6) | (1<<PORTD5) | (1<<PORTD4) | (1<<PORTD3) | (1<<PORTD2) | (1<<PORTD1) | (1<<PORTD0);
-0001d1 e3ef      	LDI  R30,LOW(63)
-0001d2 bbe2      	OUT  0x12,R30
-                 ; 0000 0053 
-                 ; 0000 0054 // Timer/Counter 0 initialization
-                 ; 0000 0055 // Clock source: System Clock
-                 ; 0000 0056 // Clock value: 62.500 kHz
-                 ; 0000 0057 // Mode: Normal top=0xFF
-                 ; 0000 0058 // OC0 output: Disconnected
-                 ; 0000 0059 // Timer Period: 4.096 ms
-                 ; 0000 005A TCCR0=(0<<WGM00) | (0<<COM01) | (0<<COM00) | (0<<WGM01) | (1<<CS02) | (0<<CS01) | (0<<CS00);
-0001d3 e0e4      	LDI  R30,LOW(4)
-0001d4 bfe3      	OUT  0x33,R30
-                 ; 0000 005B TCNT0=0x00;
-0001d5 e0e0      	LDI  R30,LOW(0)
-0001d6 bfe2      	OUT  0x32,R30
-                 ; 0000 005C OCR0=0x00;
-0001d7 bfec      	OUT  0x3C,R30
-                 ; 0000 005D 
-                 ; 0000 005E // Timer(s)/Counter(s) Interrupt(s) initialization
-                 ; 0000 005F TIMSK=(0<<OCIE2) | (0<<TOIE2) | (0<<TICIE1) | (0<<OCIE1A) | (0<<OCIE1B) | (0<<TOIE1) | (0<<OCIE0) | (1<<TOIE0);
-0001d8 e0e1      	LDI  R30,LOW(1)
-0001d9 bfe9      	OUT  0x39,R30
-                 ; 0000 0060 
-                 ; 0000 0061 // External Interrupt(s) initialization
-                 ; 0000 0062 // INT0: On
-                 ; 0000 0063 // INT0 Mode: Falling Edge
-                 ; 0000 0064 // INT1: Off
-                 ; 0000 0065 // INT2: Off
-                 ; 0000 0066 GICR|=(0<<INT1) | (1<<INT0) | (0<<INT2);
-0001da b7eb      	IN   R30,0x3B
-0001db 64e0      	ORI  R30,0x40
-0001dc bfeb      	OUT  0x3B,R30
-                 ; 0000 0067 MCUCR=(0<<ISC11) | (0<<ISC10) | (1<<ISC01) | (0<<ISC00);
-0001dd e0e2      	LDI  R30,LOW(2)
-0001de bfe5      	OUT  0x35,R30
-                 ; 0000 0068 MCUCSR=(0<<ISC2);
-0001df e0e0      	LDI  R30,LOW(0)
-0001e0 bfe4      	OUT  0x34,R30
-                 ; 0000 0069 GIFR=(0<<INTF1) | (1<<INTF0) | (0<<INTF2);
-0001e1 e4e0      	LDI  R30,LOW(64)
-0001e2 bfea      	OUT  0x3A,R30
-                 ; 0000 006A 
-                 ; 0000 006B // Bit-Banged I2C Bus initialization
-                 ; 0000 006C // I2C Port: PORTD
-                 ; 0000 006D // I2C SDA bit: 6
-                 ; 0000 006E // I2C SCL bit: 7
-                 ; 0000 006F // Bit Rate: 100 kHz
-                 ; 0000 0070 // Note: I2C settings are specified in the
-                 ; 0000 0071 // Project|Configure|C Compiler|Libraries|I2C menu.
-                 ; 0000 0072 i2c_init();
-0001e3 940e 03a5 	CALL _i2c_init
-                 ; 0000 0073 
-                 ; 0000 0074 // DS1307 Real Time Clock initialization
-                 ; 0000 0075 // Square wave output on pin SQW/OUT: Off
-                 ; 0000 0076 // SQW/OUT pin state: 0
-                 ; 0000 0077 rtc_init(0,0,0);
-0001e5 e0e0      	LDI  R30,LOW(0)
-0001e6 93ea      	ST   -Y,R30
-0001e7 93ea      	ST   -Y,R30
-0001e8 e0a0      	LDI  R26,LOW(0)
-0001e9 d010      	RCALL _rtc_init
-                 ; 0000 0078 
-                 ; 0000 0079 // 1 Wire Bus initialization
-                 ; 0000 007A // 1 Wire Data port: PORTA
-                 ; 0000 007B // 1 Wire Data bit: 0
-                 ; 0000 007C // Note: 1 Wire port settings are specified in the
-                 ; 0000 007D // Project|Configure|C Compiler|Libraries|1 Wire menu.
-                 ; 0000 007E w1_init();
-0001ea 940e 0400 	CALL _w1_init
+0001d8 efe0      	LDI  R30,LOW(240)
+0001d9 bbea      	OUT  0x1A,R30
+                 ; 0000 0053 // State: Bit7=0 Bit6=0 Bit5=0 Bit4=0 Bit3=P Bit2=T Bit1=T Bit0=T
+                 ; 0000 0054 PORTA=(0<<PORTA7) | (0<<PORTA6) | (0<<PORTA5) | (0<<PORTA4) | (1<<PORTA3) | (0<<PORTA2) | (0<<PORTA1) | (0<<PORTA0);
+0001da e0e8      	LDI  R30,LOW(8)
+0001db bbeb      	OUT  0x1B,R30
+                 ; 0000 0055 
+                 ; 0000 0056 // Port B initialization
+                 ; 0000 0057 // Function: Bit7=Out Bit6=Out Bit5=Out Bit4=Out Bit3=Out Bit2=Out Bit1=Out Bit0=Out
+                 ; 0000 0058 DDRB=(1<<DDB7) | (1<<DDB6) | (1<<DDB5) | (1<<DDB4) | (1<<DDB3) | (1<<DDB2) | (1<<DDB1) | (1<<DDB0);
+0001dc efef      	LDI  R30,LOW(255)
+0001dd bbe7      	OUT  0x17,R30
+                 ; 0000 0059 // State: Bit7=0 Bit6=0 Bit5=0 Bit4=0 Bit3=0 Bit2=0 Bit1=0 Bit0=0
+                 ; 0000 005A PORTB=(0<<PORTB7) | (0<<PORTB6) | (0<<PORTB5) | (0<<PORTB4) | (0<<PORTB3) | (0<<PORTB2) | (0<<PORTB1) | (0<<PORTB0);
+0001de e0e0      	LDI  R30,LOW(0)
+0001df bbe8      	OUT  0x18,R30
+                 ; 0000 005B 
+                 ; 0000 005C // Port C initialization
+                 ; 0000 005D // Function: Bit7=Out Bit6=Out Bit5=Out Bit4=Out Bit3=Out Bit2=Out Bit1=Out Bit0=Out
+                 ; 0000 005E DDRC=(1<<DDC7) | (1<<DDC6) | (1<<DDC5) | (1<<DDC4) | (1<<DDC3) | (1<<DDC2) | (1<<DDC1) | (1<<DDC0);
+0001e0 efef      	LDI  R30,LOW(255)
+0001e1 bbe4      	OUT  0x14,R30
+                 ; 0000 005F // State: Bit7=0 Bit6=0 Bit5=0 Bit4=0 Bit3=0 Bit2=0 Bit1=0 Bit0=0
+                 ; 0000 0060 PORTC=(0<<PORTC7) | (0<<PORTC6) | (0<<PORTC5) | (0<<PORTC4) | (0<<PORTC3) | (0<<PORTC2) | (0<<PORTC1) | (0<<PORTC0);
+0001e2 e0e0      	LDI  R30,LOW(0)
+0001e3 bbe5      	OUT  0x15,R30
+                 ; 0000 0061 
+                 ; 0000 0062 // Port D initialization
+                 ; 0000 0063 // Function: Bit7=In Bit6=In Bit5=In Bit4=In Bit3=In Bit2=In Bit1=In Bit0=In
+                 ; 0000 0064 DDRD=(0<<DDD7) | (0<<DDD6) | (0<<DDD5) | (0<<DDD4) | (0<<DDD3) | (0<<DDD2) | (0<<DDD1) | (0<<DDD0);
+0001e4 bbe1      	OUT  0x11,R30
+                 ; 0000 0065 // State: Bit7=T Bit6=T Bit5=P Bit4=P Bit3=P Bit2=P Bit1=P Bit0=P
+                 ; 0000 0066 PORTD=(0<<PORTD7) | (0<<PORTD6) | (1<<PORTD5) | (1<<PORTD4) | (1<<PORTD3) | (1<<PORTD2) | (1<<PORTD1) | (1<<PORTD0);
+0001e5 e3ef      	LDI  R30,LOW(63)
+0001e6 bbe2      	OUT  0x12,R30
+                 ; 0000 0067 
+                 ; 0000 0068 // Timer/Counter 1 initialization
+                 ; 0000 0069 // Clock source: System Clock
+                 ; 0000 006A // Clock value: 62.500 kHz
+                 ; 0000 006B // Mode: Normal top=0xFFFF
+                 ; 0000 006C // OC1A output: Disconnected
+                 ; 0000 006D // OC1B output: Disconnected
+                 ; 0000 006E // Noise Canceler: Off
+                 ; 0000 006F // Input Capture on Falling Edge
+                 ; 0000 0070 // Timer Period: 1.0486 s
+                 ; 0000 0071 // Timer1 Overflow Interrupt: On
+                 ; 0000 0072 // Input Capture Interrupt: Off
+                 ; 0000 0073 // Compare A Match Interrupt: Off
+                 ; 0000 0074 // Compare B Match Interrupt: Off
+                 ; 0000 0075 TCCR1A=(0<<COM1A1) | (0<<COM1A0) | (0<<COM1B1) | (0<<COM1B0) | (0<<WGM11) | (0<<WGM10);
+0001e7 e0e0      	LDI  R30,LOW(0)
+0001e8 bdef      	OUT  0x2F,R30
+                 ; 0000 0076 TCCR1B=(0<<ICNC1) | (0<<ICES1) | (0<<WGM13) | (0<<WGM12) | (1<<CS12) | (0<<CS11) | (0<<CS10);
+0001e9 e0e4      	LDI  R30,LOW(4)
+0001ea bdee      	OUT  0x2E,R30
+                 ; 0000 0077 TCNT1H=0x00;
+0001eb e0e0      	LDI  R30,LOW(0)
+0001ec bded      	OUT  0x2D,R30
+                 ; 0000 0078 TCNT1L=0x00;
+0001ed bdec      	OUT  0x2C,R30
+                 ; 0000 0079 ICR1H=0x00;
+0001ee bde7      	OUT  0x27,R30
+                 ; 0000 007A ICR1L=0x00;
+0001ef bde6      	OUT  0x26,R30
+                 ; 0000 007B OCR1AH=0x00;
+0001f0 bdeb      	OUT  0x2B,R30
+                 ; 0000 007C OCR1AL=0x00;
+0001f1 bdea      	OUT  0x2A,R30
+                 ; 0000 007D OCR1BH=0x00;
+0001f2 bde9      	OUT  0x29,R30
+                 ; 0000 007E OCR1BL=0x00;
+0001f3 bde8      	OUT  0x28,R30
                  ; 0000 007F 
-                 ; 0000 0080 // Graphic Display Controller initialization
-                 ; 0000 0081 // The ST7920 connections are specified in the
-                 ; 0000 0082 // Project|Configure|C Compiler|Libraries|Graphic Display menu:
-                 ; 0000 0083 // DB0 - PORTC Bit 4
-                 ; 0000 0084 // DB1 - PORTC Bit 5
-                 ; 0000 0085 // DB2 - PORTC Bit 6
-                 ; 0000 0086 // DB3 - PORTC Bit 7
-                 ; 0000 0087 // DB4 - PORTA Bit 7
-                 ; 0000 0088 // DB5 - PORTA Bit 6
-                 ; 0000 0089 // DB6 - PORTA Bit 5
-                 ; 0000 008A // DB7 - PORTA Bit 4
-                 ; 0000 008B // E - PORTC Bit 2
-                 ; 0000 008C // R /W - PORTC Bit 1
-                 ; 0000 008D // RS - PORTC Bit 0
-                 ; 0000 008E // /RST - PORTC Bit 3
-                 ; 0000 008F 
-                 ; 0000 0090 // Specify the current font for displaying text
-                 ; 0000 0091 glcd_init_data.font=font5x7;
-0001ec e5e4      	LDI  R30,LOW(_font5x7*2)
-0001ed e0f0      	LDI  R31,HIGH(_font5x7*2)
-0001ee 83e8      	ST   Y,R30
-0001ef 83f9      	STD  Y+1,R31
-                 ; 0000 0092 // No function is used for reading
-                 ; 0000 0093 // image data from external memory
-                 ; 0000 0094 glcd_init_data.readxmem=NULL;
-0001f0 e0e0      	LDI  R30,LOW(0)
-0001f1 83ea      	STD  Y+2,R30
-0001f2 83eb      	STD  Y+2+1,R30
-                 ; 0000 0095 // No function is used for writing
-                 ; 0000 0096 // image data to external memory
-                 ; 0000 0097 glcd_init_data.writexmem=NULL;
-0001f3 83ec      	STD  Y+4,R30
-0001f4 83ed      	STD  Y+4+1,R30
-                 ; 0000 0098 
-                 ; 0000 0099 glcd_init(&glcd_init_data);
-0001f5 01de      	MOVW R26,R28
-0001f6 d0d1      	RCALL _glcd_init
+                 ; 0000 0080 // Timer(s)/Counter(s) Interrupt(s) initialization
+                 ; 0000 0081 TIMSK=(0<<OCIE2) | (0<<TOIE2) | (0<<TICIE1) | (0<<OCIE1A) | (0<<OCIE1B) | (1<<TOIE1) | (0<<OCIE0) | (0<<TOIE0);
+0001f4 e0e4      	LDI  R30,LOW(4)
+0001f5 bfe9      	OUT  0x39,R30
+                 ; 0000 0082 
+                 ; 0000 0083 // External Interrupt(s) initialization
+                 ; 0000 0084 // INT0: On
+                 ; 0000 0085 // INT0 Mode: Falling Edge
+                 ; 0000 0086 // INT1: Off
+                 ; 0000 0087 // INT2: Off
+                 ; 0000 0088 GICR|=(0<<INT1) | (1<<INT0) | (0<<INT2);
+0001f6 b7eb      	IN   R30,0x3B
+0001f7 64e0      	ORI  R30,0x40
+0001f8 bfeb      	OUT  0x3B,R30
+                 ; 0000 0089 MCUCR=(0<<ISC11) | (0<<ISC10) | (1<<ISC01) | (0<<ISC00);
+0001f9 e0e2      	LDI  R30,LOW(2)
+0001fa bfe5      	OUT  0x35,R30
+                 ; 0000 008A MCUCSR=(0<<ISC2);
+0001fb e0e0      	LDI  R30,LOW(0)
+0001fc bfe4      	OUT  0x34,R30
+                 ; 0000 008B GIFR=(0<<INTF1) | (1<<INTF0) | (0<<INTF2);
+0001fd e4e0      	LDI  R30,LOW(64)
+0001fe bfea      	OUT  0x3A,R30
+                 ; 0000 008C 
+                 ; 0000 008D // Bit-Banged I2C Bus initialization
+                 ; 0000 008E // I2C Port: PORTD
+                 ; 0000 008F // I2C SDA bit: 6
+                 ; 0000 0090 // I2C SCL bit: 7
+                 ; 0000 0091 // Bit Rate: 100 kHz
+                 ; 0000 0092 // Note: I2C settings are specified in the
+                 ; 0000 0093 // Project|Configure|C Compiler|Libraries|I2C menu.
+                 ; 0000 0094 i2c_init();
+0001ff 940e 03c3 	CALL _i2c_init
+                 ; 0000 0095 
+                 ; 0000 0096 // DS1307 Real Time Clock initialization
+                 ; 0000 0097 // Square wave output on pin SQW/OUT: Off
+                 ; 0000 0098 // SQW/OUT pin state: 0
+                 ; 0000 0099 rtc_init(0,0,0);
+000201 e0e0      	LDI  R30,LOW(0)
+000202 93ea      	ST   -Y,R30
+000203 93ea      	ST   -Y,R30
+000204 e0a0      	LDI  R26,LOW(0)
+000205 940e 0218 	CALL _rtc_init
                  ; 0000 009A 
-                 ; 0000 009B // Global enable interrupts
-                 ; 0000 009C #asm("sei")
-0001f7 9478      	sei
-                 ; 0000 009D 
-                 ; 0000 009E while (1)
-                 _0x3:
-                 ; 0000 009F       {
-                 ; 0000 00A0       // Place your code here
+                 ; 0000 009B // 1 Wire Bus initialization
+                 ; 0000 009C // 1 Wire Data port: PORTA
+                 ; 0000 009D // 1 Wire Data bit: 0
+                 ; 0000 009E // Note: 1 Wire port settings are specified in the
+                 ; 0000 009F // Project|Configure|C Compiler|Libraries|1 Wire menu.
+                 ; 0000 00A0 w1_init();
+000207 940e 041e 	CALL _w1_init
                  ; 0000 00A1 
-                 ; 0000 00A2       }
-0001f8 cfff      	RJMP _0x3
-                 ; 0000 00A3 }
+                 ; 0000 00A2 // Graphic Display Controller initialization
+                 ; 0000 00A3 // The ST7920 connections are specified in the
+                 ; 0000 00A4 // Project|Configure|C Compiler|Libraries|Graphic Display menu:
+                 ; 0000 00A5 // DB0 - PORTC Bit 4
+                 ; 0000 00A6 // DB1 - PORTC Bit 5
+                 ; 0000 00A7 // DB2 - PORTC Bit 6
+                 ; 0000 00A8 // DB3 - PORTC Bit 7
+                 ; 0000 00A9 // DB4 - PORTA Bit 7
+                 ; 0000 00AA // DB5 - PORTA Bit 6
+                 ; 0000 00AB // DB6 - PORTA Bit 5
+                 ; 0000 00AC // DB7 - PORTA Bit 4
+                 ; 0000 00AD // E - PORTC Bit 2
+                 ; 0000 00AE // R /W - PORTC Bit 1
+                 ; 0000 00AF // RS - PORTC Bit 0
+                 ; 0000 00B0 // /RST - PORTC Bit 3
+                 ; 0000 00B1 
+                 ; 0000 00B2 // Specify the current font for displaying text
+                 ; 0000 00B3 glcd_init_data.font=font5x7;
+000209 e5e4      	LDI  R30,LOW(_font5x7*2)
+00020a e0f0      	LDI  R31,HIGH(_font5x7*2)
+00020b 83e8      	ST   Y,R30
+00020c 83f9      	STD  Y+1,R31
+                 ; 0000 00B4 // No function is used for reading
+                 ; 0000 00B5 // image data from external memory
+                 ; 0000 00B6 glcd_init_data.readxmem=NULL;
+00020d e0e0      	LDI  R30,LOW(0)
+00020e 83ea      	STD  Y+2,R30
+00020f 83eb      	STD  Y+2+1,R30
+                 ; 0000 00B7 // No function is used for writing
+                 ; 0000 00B8 // image data to external memory
+                 ; 0000 00B9 glcd_init_data.writexmem=NULL;
+000210 83ec      	STD  Y+4,R30
+000211 83ed      	STD  Y+4+1,R30
+                 ; 0000 00BA 
+                 ; 0000 00BB glcd_init(&glcd_init_data);
+000212 01de      	MOVW R26,R28
+000213 940e 02e6 	CALL _glcd_init
+                 ; 0000 00BC 
+                 ; 0000 00BD // Global enable interrupts
+                 ; 0000 00BE #asm("sei")
+000215 9478      	sei
+                 ; 0000 00BF 
+                 ; 0000 00C0 while (1)
+                 _0x3:
+                 ; 0000 00C1       {
+                 ; 0000 00C2 
+                 ; 0000 00C3       }
+000216 cfff      	RJMP _0x3
+                 ; 0000 00C4 }
                  _0x6:
-0001f9 cfff      	RJMP _0x6
+000217 cfff      	RJMP _0x6
                  ; .FEND
+                 ;
+                 ;/******************  FUNCTION  *******************************/
+                 ;
+                 ;/**
+                 ;    @brief: Get real-time from DS1307
+                 ;    @prama: None
+                 ;    @retval: None
+                 ;*/
+                 ;void getTime()
+                 ; 0000 00CE {
+                 ; 0000 00CF     rtc_get_time(&hour,&minute,&sec);
+                 ; 0000 00D0 }
+                 ;
+                 ;/**
+                 ;    @brief: Display temperature & humidity on LCD 128x64
+                 ;    @prama: - x: Horizontal axis (0-127)
+                 ;            - y: Vertical axis (0-63)
+                 ;    @retval: None
+                 ;*/
+                 ;void tempDisplay(unsigned char x, unsigned char y)
+                 ; 0000 00D9 {
+                 ; 0000 00DA     float temperature,humidity;
+                 ; 0000 00DB     char lcdBuff[10];
+                 ; 0000 00DC     //#asm("cli");
+                 ; 0000 00DD     temperature=DHT_GetTemHumi(DHT_ND);
+                 ;	x -> Y+19
+                 ;	y -> Y+18
+                 ;	temperature -> Y+14
+                 ;	humidity -> Y+10
+                 ;	lcdBuff -> Y+0
+                 ; 0000 00DE     humidity=DHT_GetTemHumi(DHT_DA);
+                 ; 0000 00DF     //#asm("sei");
+                 ; 0000 00E0     sprintf(lcdBuff,"T:%2.0f",temperature);
+                 ; 0000 00E1     glcd_outtextxy(x,y+3,lcdBuff);
+                 ; 0000 00E2     glcd_outtextxyf(x+25,y,"o");
+                 ; 0000 00E3     glcd_outtextxyf(x+32,y+3,"C");
+                 ; 0000 00E4 
+                 ; 0000 00E5     sprintf(lcdBuff,"H:%2.0f",humidity);
+                 ; 0000 00E6     glcd_outtextxy(x,y+13,lcdBuff);
+                 ; 0000 00E7     glcd_outtextxyf(x+25,y+13,"%");
+                 ; 0000 00E8 }
+                 ;
+                 ;/**
+                 ;    @brief: Display time run setting on LCD 128x64
+                 ;    @prama: - x: Horizontal axis (0-127)
+                 ;            - y: Vertical axis (0-63)
+                 ;    @retval: None
+                 ;*/
+                 ;void timeSettingDisplay(unsigned char x, unsigned char y)
+                 ; 0000 00F1 {
+                 ; 0000 00F2 
+                 ; 0000 00F3 }
+                 ;
+                 ;/**
+                 ;    @brief: Display temperature control setting on LCD 128x64
+                 ;    @prama: - x: Horizontal axis (0-127)
+                 ;            - y: Vertical axis (0-63)
+                 ;    @retval: None
+                 ;*/
+                 ;void tempSettingDisplay(unsigned char x, unsigned char y)
+                 ; 0000 00FC {
+                 ; 0000 00FD 
+                 ; 0000 00FE }
+                 ;
+                 ;/**
+                 ;    @brief: Display status device (stop/running), Progress complete(%) on LCD 128x64
+                 ;    @prama: - x: Horizontal axis (0-127)
+                 ;            - y: Vertical axis (0-63)
+                 ;    @retval: None
+                 ;*/
+                 ;void statusDisplay(unsigned char x, unsigned char y)
+                 ; 0000 0107 {
+                 ; 0000 0108 
+                 ; 0000 0109 }
+                 ;
+                 ;/**
+                 ;    @brief: Process turn ON device sequence by setting
+                 ;    @prama: tempSet: Temperature setting for control heating at this temperature
+                 ;    @retval: None
+                 ;*/
+                 ;void processOn(unsigned char tempSet)
+                 ; 0000 0111 {
+                 ; 0000 0112     unsigned char Htime,Mtime,Stime;
+                 ; 0000 0113     bit flagTime;
+                 ; 0000 0114     Q_N=1;
+                 ;	tempSet -> Y+4
+                 ;	Htime -> R17
+                 ;	Mtime -> R16
+                 ;	Stime -> R19
+                 ;	flagTime -> R15.0
+                 ; 0000 0115     MOTOR=1;
+                 ; 0000 0116     flagTime=1;
+                 ; 0000 0117     if(flagTime){
+                 ; 0000 0118         Htime=hour;
+                 ; 0000 0119         Mtime=minute;
+                 ; 0000 011A         Stime=sec;
+                 ; 0000 011B         flagTime=0;
+                 ; 0000 011C     }
+                 ; 0000 011D     while(flagTime==1);
+                 ; 0000 011E     if(hour==Htime && minute==Mtime+1){
+                 ; 0000 011F        Q_L=1;
+                 ; 0000 0120        M_NEN=1;
+                 ; 0000 0121     }
+                 ; 0000 0122     if(hour==Htime && minute==Mtime+2){
+                 ; 0000 0123 
+                 ; 0000 0124     }
+                 ; 0000 0125 
+                 ; 0000 0126     /*when temp set > temp created by the compressor. this case,
+                 ; 0000 0127      the compressor is always turn ON, this time just control heat resistance.
+                 ; 0000 0128     */
+                 ; 0000 0129     if(tempSet>mTempSet){
+                 ; 0000 012A 
+                 ; 0000 012B        if(minute>=1){
+                 ; 0000 012C           Q_L=1;
+                 ; 0000 012D           M_NEN=1;
+                 ; 0000 012E           if(minute>=2){
+                 ; 0000 012F             VAN=1;
+                 ; 0000 0130             DTN=1;
+                 ; 0000 0131           }
+                 ; 0000 0132        }
+                 ; 0000 0133     }
+                 ; 0000 0134     /*when temp set < temp created by the compressor. this case,
+                 ; 0000 0135      the heat resistance is always turn OFF, this time just control the compressor.
+                 ; 0000 0136     */
+                 ; 0000 0137     else{
+                 ; 0000 0138        DTN=0;
+                 ; 0000 0139        if(minute>=1){
+                 ; 0000 013A             Q_L=1;
+                 ; 0000 013B             M_NEN=1;
+                 ; 0000 013C             if(minute>=2){
+                 ; 0000 013D             VAN=1;
+                 ; 0000 013E           }
+                 ; 0000 013F        }
+                 ; 0000 0140     }
+                 ; 0000 0141 }
+                 ;
+                 ;/**
+                 ;    @brief: Process turn OFF device sequence by setting
+                 ;    @prama:
+                 ;    @retval: None
+                 ;*/
+                 ;void processOff()
+                 ; 0000 0149 {
+                 ; 0000 014A 
+                 ; 0000 014B }
+                 	#ifndef __SLEEP_DEFINED__
+                 	#endif
+                 
+                 	.CSEG
                  
                  	.CSEG
                  _rtc_init:
                  ; .FSTART _rtc_init
-0001fa 93aa      	ST   -Y,R26
-0001fb 81ea      	LDD  R30,Y+2
-0001fc 70e3      	ANDI R30,LOW(0x3)
-0001fd 83ea      	STD  Y+2,R30
-0001fe 81e9      	LDD  R30,Y+1
-0001ff 30e0      	CPI  R30,0
-000200 f019      	BREQ _0x2000003
-000201 81ea      	LDD  R30,Y+2
-000202 61e0      	ORI  R30,0x10
-000203 83ea      	STD  Y+2,R30
-                 _0x2000003:
-000204 81e8      	LD   R30,Y
-000205 30e0      	CPI  R30,0
-000206 f019      	BREQ _0x2000004
-000207 81ea      	LDD  R30,Y+2
-000208 68e0      	ORI  R30,0x80
-000209 83ea      	STD  Y+2,R30
-                 _0x2000004:
-00020a 940e 03aa 	CALL _i2c_start
-00020c eda0      	LDI  R26,LOW(208)
-00020d 940e 03de 	CALL _i2c_write
-00020f e0a7      	LDI  R26,LOW(7)
-000210 940e 03de 	CALL _i2c_write
-000212 81aa      	LDD  R26,Y+2
-000213 940e 03de 	CALL _i2c_write
-000215 940e 03b9 	CALL _i2c_stop
-000217 9623      	ADIW R28,3
-000218 9508      	RET
+000218 93aa      	ST   -Y,R26
+000219 81ea      	LDD  R30,Y+2
+00021a 70e3      	ANDI R30,LOW(0x3)
+00021b 83ea      	STD  Y+2,R30
+00021c 81e9      	LDD  R30,Y+1
+00021d 30e0      	CPI  R30,0
+00021e f019      	BREQ _0x2020003
+00021f 81ea      	LDD  R30,Y+2
+000220 61e0      	ORI  R30,0x10
+000221 83ea      	STD  Y+2,R30
+                 _0x2020003:
+000222 81e8      	LD   R30,Y
+000223 30e0      	CPI  R30,0
+000224 f019      	BREQ _0x2020004
+000225 81ea      	LDD  R30,Y+2
+000226 68e0      	ORI  R30,0x80
+000227 83ea      	STD  Y+2,R30
+                 _0x2020004:
+000228 940e 03c8 	CALL _i2c_start
+00022a eda0      	LDI  R26,LOW(208)
+00022b 940e 03fc 	CALL _i2c_write
+00022d e0a7      	LDI  R26,LOW(7)
+00022e 940e 03fc 	CALL _i2c_write
+000230 81aa      	LDD  R26,Y+2
+000231 940e 03fc 	CALL _i2c_write
+000233 940e 03d7 	CALL _i2c_stop
+000235 9623      	ADIW R28,3
+000236 9508      	RET
                  ; .FEND
                  
                  	.CSEG
@@ -1850,425 +2071,425 @@ G:\TAM\K\AVR\May Say V2 PCB AT32A\Debug\List\MS_V2_PCB.asm(1215): warning: .cseg
                  	#endif
                  
                  	.CSEG
-                 _st7920_delay_G102:
-                 ; .FSTART _st7920_delay_G102
-000219 0000          nop
-00021a 0000          nop
-00021b 0000          nop
-00021c 9508      	RET
+                 _st7920_delay_G103:
+                 ; .FSTART _st7920_delay_G103
+000237 0000          nop
+000238 0000          nop
+000239 0000          nop
+00023a 9508      	RET
                  ; .FEND
-                 _st7920_wrbus_G102:
-                 ; .FSTART _st7920_wrbus_G102
-00021d 93aa      	ST   -Y,R26
-00021e 98a9      	CBI  0x15,1
-00021f 9aaa      	SBI  0x15,2
-000220 9aa4      	SBI  0x14,4
-000221 9aa5      	SBI  0x14,5
-000222 9aa6      	SBI  0x14,6
-000223 9aa7      	SBI  0x14,7
-000224 9ad7      	SBI  0x1A,7
-000225 9ad6      	SBI  0x1A,6
-000226 9ad5      	SBI  0x1A,5
-000227 9ad4      	SBI  0x1A,4
-000228 81e8      	LD   R30,Y
-000229 70e1      	ANDI R30,LOW(0x1)
-00022a f011      	BREQ _0x2040003
-00022b 9aac      	SBI  0x15,4
-00022c c001      	RJMP _0x2040004
-                 _0x2040003:
-00022d 98ac      	CBI  0x15,4
-                 _0x2040004:
-00022e 81e8      	LD   R30,Y
-00022f 70e2      	ANDI R30,LOW(0x2)
-000230 f011      	BREQ _0x2040005
-000231 9aad      	SBI  0x15,5
-000232 c001      	RJMP _0x2040006
-                 _0x2040005:
-000233 98ad      	CBI  0x15,5
-                 _0x2040006:
-000234 81e8      	LD   R30,Y
-000235 70e4      	ANDI R30,LOW(0x4)
-000236 f011      	BREQ _0x2040007
-000237 9aae      	SBI  0x15,6
-000238 c001      	RJMP _0x2040008
-                 _0x2040007:
-000239 98ae      	CBI  0x15,6
-                 _0x2040008:
-00023a 81e8      	LD   R30,Y
-00023b 70e8      	ANDI R30,LOW(0x8)
-00023c f011      	BREQ _0x2040009
-00023d 9aaf      	SBI  0x15,7
-00023e c001      	RJMP _0x204000A
-                 _0x2040009:
-00023f 98af      	CBI  0x15,7
-                 _0x204000A:
-000240 81e8      	LD   R30,Y
-000241 71e0      	ANDI R30,LOW(0x10)
-000242 f011      	BREQ _0x204000B
-000243 9adf      	SBI  0x1B,7
-000244 c001      	RJMP _0x204000C
-                 _0x204000B:
-000245 98df      	CBI  0x1B,7
-                 _0x204000C:
+                 _st7920_wrbus_G103:
+                 ; .FSTART _st7920_wrbus_G103
+00023b 93aa      	ST   -Y,R26
+00023c 98a9      	CBI  0x15,1
+00023d 9aaa      	SBI  0x15,2
+00023e 9aa4      	SBI  0x14,4
+00023f 9aa5      	SBI  0x14,5
+000240 9aa6      	SBI  0x14,6
+000241 9aa7      	SBI  0x14,7
+000242 9ad7      	SBI  0x1A,7
+000243 9ad6      	SBI  0x1A,6
+000244 9ad5      	SBI  0x1A,5
+000245 9ad4      	SBI  0x1A,4
 000246 81e8      	LD   R30,Y
-000247 72e0      	ANDI R30,LOW(0x20)
-000248 f011      	BREQ _0x204000D
-000249 9ade      	SBI  0x1B,6
-00024a c001      	RJMP _0x204000E
-                 _0x204000D:
-00024b 98de      	CBI  0x1B,6
-                 _0x204000E:
+000247 70e1      	ANDI R30,LOW(0x1)
+000248 f011      	BREQ _0x2060003
+000249 9aac      	SBI  0x15,4
+00024a c001      	RJMP _0x2060004
+                 _0x2060003:
+00024b 98ac      	CBI  0x15,4
+                 _0x2060004:
 00024c 81e8      	LD   R30,Y
-00024d 74e0      	ANDI R30,LOW(0x40)
-00024e f011      	BREQ _0x204000F
-00024f 9add      	SBI  0x1B,5
-000250 c001      	RJMP _0x2040010
-                 _0x204000F:
-000251 98dd      	CBI  0x1B,5
-                 _0x2040010:
+00024d 70e2      	ANDI R30,LOW(0x2)
+00024e f011      	BREQ _0x2060005
+00024f 9aad      	SBI  0x15,5
+000250 c001      	RJMP _0x2060006
+                 _0x2060005:
+000251 98ad      	CBI  0x15,5
+                 _0x2060006:
 000252 81e8      	LD   R30,Y
-000253 78e0      	ANDI R30,LOW(0x80)
-000254 f011      	BREQ _0x2040011
-000255 9adc      	SBI  0x1B,4
-000256 c001      	RJMP _0x2040012
-                 _0x2040011:
-000257 98dc      	CBI  0x1B,4
-                 _0x2040012:
-000258 dfc0      	RCALL _st7920_delay_G102
-000259 98aa      	CBI  0x15,2
-00025a c048      	RJMP _0x2180002
+000253 70e4      	ANDI R30,LOW(0x4)
+000254 f011      	BREQ _0x2060007
+000255 9aae      	SBI  0x15,6
+000256 c001      	RJMP _0x2060008
+                 _0x2060007:
+000257 98ae      	CBI  0x15,6
+                 _0x2060008:
+000258 81e8      	LD   R30,Y
+000259 70e8      	ANDI R30,LOW(0x8)
+00025a f011      	BREQ _0x2060009
+00025b 9aaf      	SBI  0x15,7
+00025c c001      	RJMP _0x206000A
+                 _0x2060009:
+00025d 98af      	CBI  0x15,7
+                 _0x206000A:
+00025e 81e8      	LD   R30,Y
+00025f 71e0      	ANDI R30,LOW(0x10)
+000260 f011      	BREQ _0x206000B
+000261 9adf      	SBI  0x1B,7
+000262 c001      	RJMP _0x206000C
+                 _0x206000B:
+000263 98df      	CBI  0x1B,7
+                 _0x206000C:
+000264 81e8      	LD   R30,Y
+000265 72e0      	ANDI R30,LOW(0x20)
+000266 f011      	BREQ _0x206000D
+000267 9ade      	SBI  0x1B,6
+000268 c001      	RJMP _0x206000E
+                 _0x206000D:
+000269 98de      	CBI  0x1B,6
+                 _0x206000E:
+00026a 81e8      	LD   R30,Y
+00026b 74e0      	ANDI R30,LOW(0x40)
+00026c f011      	BREQ _0x206000F
+00026d 9add      	SBI  0x1B,5
+00026e c001      	RJMP _0x2060010
+                 _0x206000F:
+00026f 98dd      	CBI  0x1B,5
+                 _0x2060010:
+000270 81e8      	LD   R30,Y
+000271 78e0      	ANDI R30,LOW(0x80)
+000272 f011      	BREQ _0x2060011
+000273 9adc      	SBI  0x1B,4
+000274 c001      	RJMP _0x2060012
+                 _0x2060011:
+000275 98dc      	CBI  0x1B,4
+                 _0x2060012:
+000276 dfc0      	RCALL _st7920_delay_G103
+000277 98aa      	CBI  0x15,2
+000278 c048      	RJMP _0x21A0002
                  ; .FEND
-                 _st7920_busy_G102:
-                 ; .FSTART _st7920_busy_G102
-00025b 98a8      	CBI  0x15,0
-00025c 9aa9      	SBI  0x15,1
-00025d 98a4      	CBI  0x14,4
-00025e 98a5      	CBI  0x14,5
-00025f 98a6      	CBI  0x14,6
-000260 98a7      	CBI  0x14,7
-000261 98d7      	CBI  0x1A,7
-000262 98d6      	CBI  0x1A,6
-000263 98d5      	CBI  0x1A,5
-000264 98d4      	CBI  0x1A,4
-000265 9aaa      	SBI  0x15,2
-000266 dfb2      	RCALL _st7920_delay_G102
-                 _0x204001B:
-000267 99cc      	SBIC 0x19,4
-000268 cffe      	RJMP _0x204001B
-000269 98aa      	CBI  0x15,2
+                 _st7920_busy_G103:
+                 ; .FSTART _st7920_busy_G103
+000279 98a8      	CBI  0x15,0
+00027a 9aa9      	SBI  0x15,1
+00027b 98a4      	CBI  0x14,4
+00027c 98a5      	CBI  0x14,5
+00027d 98a6      	CBI  0x14,6
+00027e 98a7      	CBI  0x14,7
+00027f 98d7      	CBI  0x1A,7
+000280 98d6      	CBI  0x1A,6
+000281 98d5      	CBI  0x1A,5
+000282 98d4      	CBI  0x1A,4
+000283 9aaa      	SBI  0x15,2
+000284 dfb2      	RCALL _st7920_delay_G103
+                 _0x206001B:
+000285 99cc      	SBIC 0x19,4
+000286 cffe      	RJMP _0x206001B
+000287 98aa      	CBI  0x15,2
                 +
-00026a e085     +LDI R24 , LOW ( 5 )
+000288 e085     +LDI R24 , LOW ( 5 )
                 +__DELAY_USB_LOOP :
-00026b 958a     +DEC R24
-00026c f7f1     +BRNE __DELAY_USB_LOOP
+000289 958a     +DEC R24
+00028a f7f1     +BRNE __DELAY_USB_LOOP
                  	__DELAY_USB 5
-00026d 9508      	RET
+00028b 9508      	RET
                  ; .FEND
                  _st7920_wrdata:
                  ; .FSTART _st7920_wrdata
-00026e 93aa      	ST   -Y,R26
-00026f dfeb      	RCALL _st7920_busy_G102
-000270 9aa8      	SBI  0x15,0
-000271 81a8      	LD   R26,Y
-000272 dfaa      	RCALL _st7920_wrbus_G102
-000273 c02f      	RJMP _0x2180002
+00028c 93aa      	ST   -Y,R26
+00028d dfeb      	RCALL _st7920_busy_G103
+00028e 9aa8      	SBI  0x15,0
+00028f 81a8      	LD   R26,Y
+000290 dfaa      	RCALL _st7920_wrbus_G103
+000291 c02f      	RJMP _0x21A0002
                  ; .FEND
                  _st7920_wrcmd:
                  ; .FSTART _st7920_wrcmd
-000274 93aa      	ST   -Y,R26
-000275 dfe5      	RCALL _st7920_busy_G102
-000276 81a8      	LD   R26,Y
-000277 dfa5      	RCALL _st7920_wrbus_G102
-000278 c02a      	RJMP _0x2180002
+000292 93aa      	ST   -Y,R26
+000293 dfe5      	RCALL _st7920_busy_G103
+000294 81a8      	LD   R26,Y
+000295 dfa5      	RCALL _st7920_wrbus_G103
+000296 c02a      	RJMP _0x21A0002
                  ; .FEND
-                 _st7920_setxy_G102:
-                 ; .FSTART _st7920_setxy_G102
-000279 93aa      	ST   -Y,R26
-00027a 81e8      	LD   R30,Y
-00027b 71ef      	ANDI R30,LOW(0x1F)
-00027c 68e0      	ORI  R30,0x80
-00027d 2fae      	MOV  R26,R30
-00027e dff5      	RCALL _st7920_wrcmd
-00027f 81a8      	LD   R26,Y
-000280 32a0      	CPI  R26,LOW(0x20)
-000281 f018      	BRLO _0x204001E
-000282 81e9      	LDD  R30,Y+1
-000283 68e0      	ORI  R30,0x80
-000284 83e9      	STD  Y+1,R30
-                 _0x204001E:
-000285 81e9      	LDD  R30,Y+1
-000286 95e2      	SWAP R30
-000287 70ef      	ANDI R30,0xF
-000288 68e0      	ORI  R30,0x80
-000289 2fae      	MOV  R26,R30
-00028a dfe9      	RCALL _st7920_wrcmd
-00028b c0ec      	RJMP _0x2180001
+                 _st7920_setxy_G103:
+                 ; .FSTART _st7920_setxy_G103
+000297 93aa      	ST   -Y,R26
+000298 81e8      	LD   R30,Y
+000299 71ef      	ANDI R30,LOW(0x1F)
+00029a 68e0      	ORI  R30,0x80
+00029b 2fae      	MOV  R26,R30
+00029c dff5      	RCALL _st7920_wrcmd
+00029d 81a8      	LD   R26,Y
+00029e 32a0      	CPI  R26,LOW(0x20)
+00029f f018      	BRLO _0x206001E
+0002a0 81e9      	LDD  R30,Y+1
+0002a1 68e0      	ORI  R30,0x80
+0002a2 83e9      	STD  Y+1,R30
+                 _0x206001E:
+0002a3 81e9      	LDD  R30,Y+1
+0002a4 95e2      	SWAP R30
+0002a5 70ef      	ANDI R30,0xF
+0002a6 68e0      	ORI  R30,0x80
+0002a7 2fae      	MOV  R26,R30
+0002a8 dfe9      	RCALL _st7920_wrcmd
+0002a9 c0ec      	RJMP _0x21A0001
                  ; .FEND
                  _glcd_display:
                  ; .FSTART _glcd_display
-00028c 93aa      	ST   -Y,R26
-00028d 940e 038a 	CALL SUBOPT_0x0
-00028f 81e8      	LD   R30,Y
-000290 30e0      	CPI  R30,0
-000291 f011      	BREQ _0x204001F
-000292 e0ec      	LDI  R30,LOW(12)
-000293 c001      	RJMP _0x2040020
-                 _0x204001F:
-000294 e0e8      	LDI  R30,LOW(8)
-                 _0x2040020:
-000295 2fae      	MOV  R26,R30
-000296 dfdd      	RCALL _st7920_wrcmd
-000297 81e8      	LD   R30,Y
-000298 30e0      	CPI  R30,0
-000299 f011      	BREQ _0x2040022
-00029a e0e2      	LDI  R30,LOW(2)
-00029b c001      	RJMP _0x2040023
-                 _0x2040022:
-00029c e0e0      	LDI  R30,LOW(0)
-                 _0x2040023:
-00029d 93e0 0286 	STS  _st7920_graphics_on_G102,R30
-00029f 940e 038a 	CALL SUBOPT_0x0
-0002a1 940e 0390 	CALL SUBOPT_0x1
-                 _0x2180002:
-0002a3 9621      	ADIW R28,1
-0002a4 9508      	RET
+0002aa 93aa      	ST   -Y,R26
+0002ab 940e 03a8 	CALL SUBOPT_0x0
+0002ad 81e8      	LD   R30,Y
+0002ae 30e0      	CPI  R30,0
+0002af f011      	BREQ _0x206001F
+0002b0 e0ec      	LDI  R30,LOW(12)
+0002b1 c001      	RJMP _0x2060020
+                 _0x206001F:
+0002b2 e0e8      	LDI  R30,LOW(8)
+                 _0x2060020:
+0002b3 2fae      	MOV  R26,R30
+0002b4 dfdd      	RCALL _st7920_wrcmd
+0002b5 81e8      	LD   R30,Y
+0002b6 30e0      	CPI  R30,0
+0002b7 f011      	BREQ _0x2060022
+0002b8 e0e2      	LDI  R30,LOW(2)
+0002b9 c001      	RJMP _0x2060023
+                 _0x2060022:
+0002ba e0e0      	LDI  R30,LOW(0)
+                 _0x2060023:
+0002bb 93e0 0286 	STS  _st7920_graphics_on_G103,R30
+0002bd 940e 03a8 	CALL SUBOPT_0x0
+0002bf 940e 03ae 	CALL SUBOPT_0x1
+                 _0x21A0002:
+0002c1 9621      	ADIW R28,1
+0002c2 9508      	RET
                  ; .FEND
                  _glcd_cleargraphics:
                  ; .FSTART _glcd_cleargraphics
-0002a5 940e 0420 	CALL __SAVELOCR4
-0002a7 e030      	LDI  R19,0
+0002c3 940e 043e 	CALL __SAVELOCR4
+0002c5 e030      	LDI  R19,0
                 +
-0002a8 91e0 026a+LDS R30 , _glcd_state + ( 1 )
+0002c6 91e0 026a+LDS R30 , _glcd_state + ( 1 )
                  	__GETB1MN _glcd_state,1
-0002aa 30e0      	CPI  R30,0
-0002ab f009      	BREQ _0x2040025
-0002ac ef3f      	LDI  R19,LOW(255)
-                 _0x2040025:
-0002ad 940e 0390 	CALL SUBOPT_0x1
-0002af e000      	LDI  R16,LOW(0)
-                 _0x2040026:
-0002b0 3400      	CPI  R16,64
-0002b1 f470      	BRSH _0x2040028
-0002b2 e0e0      	LDI  R30,LOW(0)
-0002b3 93ea      	ST   -Y,R30
-0002b4 2fa0      	MOV  R26,R16
-0002b5 5f0f      	SUBI R16,-1
-0002b6 dfc2      	RCALL _st7920_setxy_G102
-0002b7 e110      	LDI  R17,LOW(16)
-                 _0x2040029:
-0002b8 2fe1      	MOV  R30,R17
-0002b9 5011      	SUBI R17,1
-0002ba 30e0      	CPI  R30,0
-0002bb f019      	BREQ _0x204002B
-0002bc 2fa3      	MOV  R26,R19
-0002bd dfb0      	RCALL _st7920_wrdata
-0002be cff9      	RJMP _0x2040029
-                 _0x204002B:
-0002bf cff0      	RJMP _0x2040026
-                 _0x2040028:
-0002c0 e0e0      	LDI  R30,LOW(0)
-0002c1 93ea      	ST   -Y,R30
-0002c2 e0a0      	LDI  R26,LOW(0)
-0002c3 d0a9      	RCALL _glcd_moveto
-0002c4 940e 0425 	CALL __LOADLOCR4
-0002c6 9624      	ADIW R28,4
-0002c7 9508      	RET
+0002c8 30e0      	CPI  R30,0
+0002c9 f009      	BREQ _0x2060025
+0002ca ef3f      	LDI  R19,LOW(255)
+                 _0x2060025:
+0002cb 940e 03ae 	CALL SUBOPT_0x1
+0002cd e000      	LDI  R16,LOW(0)
+                 _0x2060026:
+0002ce 3400      	CPI  R16,64
+0002cf f470      	BRSH _0x2060028
+0002d0 e0e0      	LDI  R30,LOW(0)
+0002d1 93ea      	ST   -Y,R30
+0002d2 2fa0      	MOV  R26,R16
+0002d3 5f0f      	SUBI R16,-1
+0002d4 dfc2      	RCALL _st7920_setxy_G103
+0002d5 e110      	LDI  R17,LOW(16)
+                 _0x2060029:
+0002d6 2fe1      	MOV  R30,R17
+0002d7 5011      	SUBI R17,1
+0002d8 30e0      	CPI  R30,0
+0002d9 f019      	BREQ _0x206002B
+0002da 2fa3      	MOV  R26,R19
+0002db dfb0      	RCALL _st7920_wrdata
+0002dc cff9      	RJMP _0x2060029
+                 _0x206002B:
+0002dd cff0      	RJMP _0x2060026
+                 _0x2060028:
+0002de e0e0      	LDI  R30,LOW(0)
+0002df 93ea      	ST   -Y,R30
+0002e0 e0a0      	LDI  R26,LOW(0)
+0002e1 d0a9      	RCALL _glcd_moveto
+0002e2 940e 0443 	CALL __LOADLOCR4
+0002e4 9624      	ADIW R28,4
+0002e5 9508      	RET
                  ; .FEND
                  _glcd_init:
                  ; .FSTART _glcd_init
-0002c8 93ba      	ST   -Y,R27
-0002c9 93aa      	ST   -Y,R26
-0002ca 9aa2      	SBI  0x14,2
-0002cb 98aa      	CBI  0x15,2
-0002cc 9aa1      	SBI  0x14,1
-0002cd 9aa9      	SBI  0x15,1
-0002ce 9aa0      	SBI  0x14,0
-0002cf 98a8      	CBI  0x15,0
-0002d0 9aa3      	SBI  0x14,3
-0002d1 e3a2      	LDI  R26,LOW(50)
-0002d2 e0b0      	LDI  R27,0
-0002d3 940e 03f6 	CALL _delay_ms
-0002d5 98ab      	CBI  0x15,3
-0002d6 e0a1      	LDI  R26,LOW(1)
-0002d7 e0b0      	LDI  R27,0
-0002d8 940e 03f6 	CALL _delay_ms
-0002da 9aab      	SBI  0x15,3
-0002db e0a1      	LDI  R26,LOW(1)
-0002dc e0b0      	LDI  R27,0
-0002dd 940e 03f6 	CALL _delay_ms
-0002df 940e 0396 	CALL SUBOPT_0x2
-0002e1 940e 0396 	CALL SUBOPT_0x2
-0002e3 e0a8      	LDI  R26,LOW(8)
-0002e4 df38      	RCALL _st7920_wrbus_G102
+0002e6 93ba      	ST   -Y,R27
+0002e7 93aa      	ST   -Y,R26
+0002e8 9aa2      	SBI  0x14,2
+0002e9 98aa      	CBI  0x15,2
+0002ea 9aa1      	SBI  0x14,1
+0002eb 9aa9      	SBI  0x15,1
+0002ec 9aa0      	SBI  0x14,0
+0002ed 98a8      	CBI  0x15,0
+0002ee 9aa3      	SBI  0x14,3
+0002ef e3a2      	LDI  R26,LOW(50)
+0002f0 e0b0      	LDI  R27,0
+0002f1 940e 0414 	CALL _delay_ms
+0002f3 98ab      	CBI  0x15,3
+0002f4 e0a1      	LDI  R26,LOW(1)
+0002f5 e0b0      	LDI  R27,0
+0002f6 940e 0414 	CALL _delay_ms
+0002f8 9aab      	SBI  0x15,3
+0002f9 e0a1      	LDI  R26,LOW(1)
+0002fa e0b0      	LDI  R27,0
+0002fb 940e 0414 	CALL _delay_ms
+0002fd 940e 03b4 	CALL SUBOPT_0x2
+0002ff 940e 03b4 	CALL SUBOPT_0x2
+000301 e0a8      	LDI  R26,LOW(8)
+000302 df38      	RCALL _st7920_wrbus_G103
                 +
-0002e5 e280     +LDI R24 , LOW ( 800 )
-0002e6 e093     +LDI R25 , HIGH ( 800 )
+000303 e280     +LDI R24 , LOW ( 800 )
+000304 e093     +LDI R25 , HIGH ( 800 )
                 +__DELAY_USW_LOOP :
-0002e7 9701     +SBIW R24 , 1
-0002e8 f7f1     +BRNE __DELAY_USW_LOOP
+000305 9701     +SBIW R24 , 1
+000306 f7f1     +BRNE __DELAY_USW_LOOP
                  	__DELAY_USW 800
-0002e9 e0a1      	LDI  R26,LOW(1)
-0002ea df89      	RCALL _st7920_wrcmd
-0002eb e0af      	LDI  R26,LOW(15)
-0002ec e0b0      	LDI  R27,0
-0002ed 940e 03f6 	CALL _delay_ms
-0002ef e0e0      	LDI  R30,LOW(0)
-0002f0 93e0 0289 	STS  _yt_G102,R30
-0002f2 93e0 0288 	STS  _xt_G102,R30
-0002f4 e0a6      	LDI  R26,LOW(6)
-0002f5 df7e      	RCALL _st7920_wrcmd
-0002f6 e3a4      	LDI  R26,LOW(52)
-0002f7 df7c      	RCALL _st7920_wrcmd
-0002f8 e4a0      	LDI  R26,LOW(64)
-0002f9 df7a      	RCALL _st7920_wrcmd
-0002fa e0a2      	LDI  R26,LOW(2)
-0002fb df78      	RCALL _st7920_wrcmd
-0002fc e0e0      	LDI  R30,LOW(0)
-0002fd 93e0 0286 	STS  _st7920_graphics_on_G102,R30
-0002ff dfa5      	RCALL _glcd_cleargraphics
-000300 e0a1      	LDI  R26,LOW(1)
-000301 df8a      	RCALL _glcd_display
-000302 e0e1      	LDI  R30,LOW(1)
-000303 93e0 0269 	STS  _glcd_state,R30
-000305 e0e0      	LDI  R30,LOW(0)
+000307 e0a1      	LDI  R26,LOW(1)
+000308 df89      	RCALL _st7920_wrcmd
+000309 e0af      	LDI  R26,LOW(15)
+00030a e0b0      	LDI  R27,0
+00030b 940e 0414 	CALL _delay_ms
+00030d e0e0      	LDI  R30,LOW(0)
+00030e 93e0 0289 	STS  _yt_G103,R30
+000310 93e0 0288 	STS  _xt_G103,R30
+000312 e0a6      	LDI  R26,LOW(6)
+000313 df7e      	RCALL _st7920_wrcmd
+000314 e3a4      	LDI  R26,LOW(52)
+000315 df7c      	RCALL _st7920_wrcmd
+000316 e4a0      	LDI  R26,LOW(64)
+000317 df7a      	RCALL _st7920_wrcmd
+000318 e0a2      	LDI  R26,LOW(2)
+000319 df78      	RCALL _st7920_wrcmd
+00031a e0e0      	LDI  R30,LOW(0)
+00031b 93e0 0286 	STS  _st7920_graphics_on_G103,R30
+00031d dfa5      	RCALL _glcd_cleargraphics
+00031e e0a1      	LDI  R26,LOW(1)
+00031f df8a      	RCALL _glcd_display
+000320 e0e1      	LDI  R30,LOW(1)
+000321 93e0 0269 	STS  _glcd_state,R30
+000323 e0e0      	LDI  R30,LOW(0)
                 +
-000306 93e0 026a+STS _glcd_state + ( 1 ) , R30
+000324 93e0 026a+STS _glcd_state + ( 1 ) , R30
                  	__PUTB1MN _glcd_state,1
-000308 e0e1      	LDI  R30,LOW(1)
+000326 e0e1      	LDI  R30,LOW(1)
                 +
-000309 93e0 026f+STS _glcd_state + ( 6 ) , R30
+000327 93e0 026f+STS _glcd_state + ( 6 ) , R30
                  	__PUTB1MN _glcd_state,6
                 +
-00030b 93e0 0270+STS _glcd_state + ( 7 ) , R30
+000329 93e0 0270+STS _glcd_state + ( 7 ) , R30
                  	__PUTB1MN _glcd_state,7
-00030d 81e8      	LD   R30,Y
-00030e 81f9      	LDD  R31,Y+1
-00030f 9730      	SBIW R30,0
-000310 f0a9      	BREQ _0x204002C
-000311 81a8      	LD   R26,Y
-000312 81b9      	LDD  R27,Y+1
-000313 940e 0418 	CALL __GETW1P
+00032b 81e8      	LD   R30,Y
+00032c 81f9      	LDD  R31,Y+1
+00032d 9730      	SBIW R30,0
+00032e f0a9      	BREQ _0x206002C
+00032f 81a8      	LD   R26,Y
+000330 81b9      	LDD  R27,Y+1
+000331 940e 0436 	CALL __GETW1P
                 +
-000315 93e0 026d+STS _glcd_state + ( 4 ) , R30
-000317 93f0 026e+STS _glcd_state + ( 4 ) + 1 , R31
+000333 93e0 026d+STS _glcd_state + ( 4 ) , R30
+000335 93f0 026e+STS _glcd_state + ( 4 ) + 1 , R31
                  	__PUTW1MN _glcd_state,4
-000319 9612      	ADIW R26,2
-00031a 940e 0418 	CALL __GETW1P
+000337 9612      	ADIW R26,2
+000338 940e 0436 	CALL __GETW1P
                 +
-00031c 93e0 0282+STS _glcd_state + ( 25 ) , R30
-00031e 93f0 0283+STS _glcd_state + ( 25 ) + 1 , R31
+00033a 93e0 0282+STS _glcd_state + ( 25 ) , R30
+00033c 93f0 0283+STS _glcd_state + ( 25 ) + 1 , R31
                  	__PUTW1MN _glcd_state,25
-000320 81a8      	LD   R26,Y
-000321 81b9      	LDD  R27,Y+1
-000322 9614      	ADIW R26,4
-000323 940e 0418 	CALL __GETW1P
-000325 c00a      	RJMP _0x20400BB
-                 _0x204002C:
-000326 e0e0      	LDI  R30,LOW(0)
-000327 e0f0      	LDI  R31,HIGH(0)
+00033e 81a8      	LD   R26,Y
+00033f 81b9      	LDD  R27,Y+1
+000340 9614      	ADIW R26,4
+000341 940e 0436 	CALL __GETW1P
+000343 c00a      	RJMP _0x20600BB
+                 _0x206002C:
+000344 e0e0      	LDI  R30,LOW(0)
+000345 e0f0      	LDI  R31,HIGH(0)
                 +
-000328 93e0 026d+STS _glcd_state + ( 4 ) , R30
-00032a 93f0 026e+STS _glcd_state + ( 4 ) + 1 , R31
+000346 93e0 026d+STS _glcd_state + ( 4 ) , R30
+000348 93f0 026e+STS _glcd_state + ( 4 ) + 1 , R31
                  	__PUTW1MN _glcd_state,4
                 +
-00032c 93e0 0282+STS _glcd_state + ( 25 ) , R30
-00032e 93f0 0283+STS _glcd_state + ( 25 ) + 1 , R31
+00034a 93e0 0282+STS _glcd_state + ( 25 ) , R30
+00034c 93f0 0283+STS _glcd_state + ( 25 ) + 1 , R31
                  	__PUTW1MN _glcd_state,25
-                 _0x20400BB:
+                 _0x20600BB:
                 +
-000330 93e0 0284+STS _glcd_state + ( 27 ) , R30
-000332 93f0 0285+STS _glcd_state + ( 27 ) + 1 , R31
+00034e 93e0 0284+STS _glcd_state + ( 27 ) , R30
+000350 93f0 0285+STS _glcd_state + ( 27 ) + 1 , R31
                  	__PUTW1MN _glcd_state,27
-000334 e0e1      	LDI  R30,LOW(1)
+000352 e0e1      	LDI  R30,LOW(1)
                 +
-000335 93e0 0271+STS _glcd_state + ( 8 ) , R30
+000353 93e0 0271+STS _glcd_state + ( 8 ) , R30
                  	__PUTB1MN _glcd_state,8
-000337 efef      	LDI  R30,LOW(255)
+000355 efef      	LDI  R30,LOW(255)
                 +
-000338 93e0 0272+STS _glcd_state + ( 9 ) , R30
+000356 93e0 0272+STS _glcd_state + ( 9 ) , R30
                  	__PUTB1MN _glcd_state,9
-00033a e0e1      	LDI  R30,LOW(1)
+000358 e0e1      	LDI  R30,LOW(1)
                 +
-00033b 93e0 0279+STS _glcd_state + ( 16 ) , R30
+000359 93e0 0279+STS _glcd_state + ( 16 ) , R30
                  	__PUTB1MN _glcd_state,16
                 +
-00033d e7ea     +LDI R30 , LOW ( _glcd_state + ( 17 ) )
-00033e e0f2     +LDI R31 , HIGH ( _glcd_state + ( 17 ) )
+00035b e7ea     +LDI R30 , LOW ( _glcd_state + ( 17 ) )
+00035c e0f2     +LDI R31 , HIGH ( _glcd_state + ( 17 ) )
                  	__POINTW1MN _glcd_state,17
-00033f 93fa      	ST   -Y,R31
-000340 93ea      	ST   -Y,R30
-000341 efef      	LDI  R30,LOW(255)
-000342 93ea      	ST   -Y,R30
-000343 e0a8      	LDI  R26,LOW(8)
-000344 e0b0      	LDI  R27,0
-000345 940e 037a 	CALL _memset
-000347 e0e1      	LDI  R30,LOW(1)
-000348 c02f      	RJMP _0x2180001
+00035d 93fa      	ST   -Y,R31
+00035e 93ea      	ST   -Y,R30
+00035f efef      	LDI  R30,LOW(255)
+000360 93ea      	ST   -Y,R30
+000361 e0a8      	LDI  R26,LOW(8)
+000362 e0b0      	LDI  R27,0
+000363 940e 0398 	CALL _memset
+000365 e0e1      	LDI  R30,LOW(1)
+000366 c02f      	RJMP _0x21A0001
                  ; .FEND
                  
                  	.CSEG
                  _glcd_clipx:
                  ; .FSTART _glcd_clipx
-000349 940e 039e 	CALL SUBOPT_0x3
-00034b f01c      	BRLT _0x2060003
-00034c e0e0      	LDI  R30,LOW(0)
-00034d e0f0      	LDI  R31,HIGH(0)
-00034e c029      	RJMP _0x2180001
-                 _0x2060003:
-00034f 81a8      	LD   R26,Y
-000350 81b9      	LDD  R27,Y+1
-000351 38a0      	CPI  R26,LOW(0x80)
-000352 e0e0      	LDI  R30,HIGH(0x80)
-000353 07be      	CPC  R27,R30
-000354 f01c      	BRLT _0x2060004
-000355 e7ef      	LDI  R30,LOW(127)
-000356 e0f0      	LDI  R31,HIGH(127)
-000357 c020      	RJMP _0x2180001
-                 _0x2060004:
-000358 81e8      	LD   R30,Y
-000359 81f9      	LDD  R31,Y+1
-00035a c01d      	RJMP _0x2180001
+000367 940e 03bc 	CALL SUBOPT_0x3
+000369 f01c      	BRLT _0x2080003
+00036a e0e0      	LDI  R30,LOW(0)
+00036b e0f0      	LDI  R31,HIGH(0)
+00036c c029      	RJMP _0x21A0001
+                 _0x2080003:
+00036d 81a8      	LD   R26,Y
+00036e 81b9      	LDD  R27,Y+1
+00036f 38a0      	CPI  R26,LOW(0x80)
+000370 e0e0      	LDI  R30,HIGH(0x80)
+000371 07be      	CPC  R27,R30
+000372 f01c      	BRLT _0x2080004
+000373 e7ef      	LDI  R30,LOW(127)
+000374 e0f0      	LDI  R31,HIGH(127)
+000375 c020      	RJMP _0x21A0001
+                 _0x2080004:
+000376 81e8      	LD   R30,Y
+000377 81f9      	LDD  R31,Y+1
+000378 c01d      	RJMP _0x21A0001
                  ; .FEND
                  _glcd_clipy:
                  ; .FSTART _glcd_clipy
-00035b 940e 039e 	CALL SUBOPT_0x3
-00035d f01c      	BRLT _0x2060005
-00035e e0e0      	LDI  R30,LOW(0)
-00035f e0f0      	LDI  R31,HIGH(0)
-000360 c017      	RJMP _0x2180001
-                 _0x2060005:
-000361 81a8      	LD   R26,Y
-000362 81b9      	LDD  R27,Y+1
-000363 34a0      	CPI  R26,LOW(0x40)
-000364 e0e0      	LDI  R30,HIGH(0x40)
-000365 07be      	CPC  R27,R30
-000366 f01c      	BRLT _0x2060006
-000367 e3ef      	LDI  R30,LOW(63)
-000368 e0f0      	LDI  R31,HIGH(63)
-000369 c00e      	RJMP _0x2180001
-                 _0x2060006:
-00036a 81e8      	LD   R30,Y
-00036b 81f9      	LDD  R31,Y+1
-00036c c00b      	RJMP _0x2180001
+000379 940e 03bc 	CALL SUBOPT_0x3
+00037b f01c      	BRLT _0x2080005
+00037c e0e0      	LDI  R30,LOW(0)
+00037d e0f0      	LDI  R31,HIGH(0)
+00037e c017      	RJMP _0x21A0001
+                 _0x2080005:
+00037f 81a8      	LD   R26,Y
+000380 81b9      	LDD  R27,Y+1
+000381 34a0      	CPI  R26,LOW(0x40)
+000382 e0e0      	LDI  R30,HIGH(0x40)
+000383 07be      	CPC  R27,R30
+000384 f01c      	BRLT _0x2080006
+000385 e3ef      	LDI  R30,LOW(63)
+000386 e0f0      	LDI  R31,HIGH(63)
+000387 c00e      	RJMP _0x21A0001
+                 _0x2080006:
+000388 81e8      	LD   R30,Y
+000389 81f9      	LDD  R31,Y+1
+00038a c00b      	RJMP _0x21A0001
                  ; .FEND
                  _glcd_moveto:
                  ; .FSTART _glcd_moveto
-00036d 93aa      	ST   -Y,R26
-00036e 81a9      	LDD  R26,Y+1
-00036f 27bb      	CLR  R27
-000370 dfd8      	RCALL _glcd_clipx
+00038b 93aa      	ST   -Y,R26
+00038c 81a9      	LDD  R26,Y+1
+00038d 27bb      	CLR  R27
+00038e dfd8      	RCALL _glcd_clipx
                 +
-000371 93e0 026b+STS _glcd_state + ( 2 ) , R30
+00038f 93e0 026b+STS _glcd_state + ( 2 ) , R30
                  	__PUTB1MN _glcd_state,2
-000373 81a8      	LD   R26,Y
-000374 27bb      	CLR  R27
-000375 dfe5      	RCALL _glcd_clipy
+000391 81a8      	LD   R26,Y
+000392 27bb      	CLR  R27
+000393 dfe5      	RCALL _glcd_clipy
                 +
-000376 93e0 026c+STS _glcd_state + ( 3 ) , R30
+000394 93e0 026c+STS _glcd_state + ( 3 ) , R30
                  	__PUTB1MN _glcd_state,3
-                 _0x2180001:
-000378 9622      	ADIW R28,2
-000379 9508      	RET
+                 _0x21A0001:
+000396 9622      	ADIW R28,2
+000397 9508      	RET
                  ; .FEND
                  	#ifndef __SLEEP_DEFINED__
                  	#endif
@@ -2280,24 +2501,24 @@ G:\TAM\K\AVR\May Say V2 PCB AT32A\Debug\List\MS_V2_PCB.asm(1215): warning: .cseg
                  	.CSEG
                  _memset:
                  ; .FSTART _memset
-00037a 93ba      	ST   -Y,R27
-00037b 93aa      	ST   -Y,R26
-00037c 81b9          ldd  r27,y+1
-00037d 81a8          ld   r26,y
-00037e 9610          adiw r26,0
-00037f f031          breq memset1
-000380 81fc          ldd  r31,y+4
-000381 81eb          ldd  r30,y+3
-000382 816a          ldd  r22,y+2
+000398 93ba      	ST   -Y,R27
+000399 93aa      	ST   -Y,R26
+00039a 81b9          ldd  r27,y+1
+00039b 81a8          ld   r26,y
+00039c 9610          adiw r26,0
+00039d f031          breq memset1
+00039e 81fc          ldd  r31,y+4
+00039f 81eb          ldd  r30,y+3
+0003a0 816a          ldd  r22,y+2
                  memset0:
-000383 9361          st   z+,r22
-000384 9711          sbiw r26,1
-000385 f7e9          brne memset0
+0003a1 9361          st   z+,r22
+0003a2 9711          sbiw r26,1
+0003a3 f7e9          brne memset0
                  memset1:
-000386 81eb          ldd  r30,y+3
-000387 81fc          ldd  r31,y+4
-000388 9625      	ADIW R28,5
-000389 9508      	RET
+0003a4 81eb          ldd  r30,y+3
+0003a5 81fc          ldd  r31,y+4
+0003a6 9625      	ADIW R28,5
+0003a7 9508      	RET
                  ; .FEND
                  
                  	.CSEG
@@ -2306,9 +2527,9 @@ G:\TAM\K\AVR\May Say V2 PCB AT32A\Debug\List\MS_V2_PCB.asm(1215): warning: .cseg
                  
                  	.CSEG
                  
-                 	.DSEG
-                 
                  	.CSEG
+                 
+                 	.DSEG
                  
                  	.CSEG
                  
@@ -2317,53 +2538,59 @@ G:\TAM\K\AVR\May Say V2 PCB AT32A\Debug\List\MS_V2_PCB.asm(1215): warning: .cseg
 000260           	.BYTE 0x9
                  _glcd_state:
 000269           	.BYTE 0x1D
-                 _st7920_graphics_on_G102:
+                 
+                 	.ESEG
+                 _mTempSet:
+000000           	.BYTE 0x1
+                 
+                 	.DSEG
+                 _st7920_graphics_on_G103:
 000286           	.BYTE 0x1
-                 _st7920_bits8_15_G102:
+                 _st7920_bits8_15_G103:
 000287           	.BYTE 0x1
-                 _xt_G102:
+                 _xt_G103:
 000288           	.BYTE 0x1
-                 _yt_G102:
+                 _yt_G103:
 000289           	.BYTE 0x1
-                 __seed_G10A:
+                 __seed_G10C:
 00028a           	.BYTE 0x4
                  
                  	.CSEG
                  ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:1 WORDS
                  SUBOPT_0x0:
-00038a 91e0 0286 	LDS  R30,_st7920_graphics_on_G102
-00038c 63e0      	ORI  R30,LOW(0x30)
-00038d 2fae      	MOV  R26,R30
-00038e 940c 0274 	JMP  _st7920_wrcmd
+0003a8 91e0 0286 	LDS  R30,_st7920_graphics_on_G103
+0003aa 63e0      	ORI  R30,LOW(0x30)
+0003ab 2fae      	MOV  R26,R30
+0003ac 940c 0292 	JMP  _st7920_wrcmd
                  
                  ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:1 WORDS
                  SUBOPT_0x1:
-000390 91e0 0286 	LDS  R30,_st7920_graphics_on_G102
-000392 63e4      	ORI  R30,LOW(0x34)
-000393 2fae      	MOV  R26,R30
-000394 940c 0274 	JMP  _st7920_wrcmd
+0003ae 91e0 0286 	LDS  R30,_st7920_graphics_on_G103
+0003b0 63e4      	ORI  R30,LOW(0x34)
+0003b1 2fae      	MOV  R26,R30
+0003b2 940c 0292 	JMP  _st7920_wrcmd
                  
                  ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:2 WORDS
                  SUBOPT_0x2:
-000396 e3a0      	LDI  R26,LOW(48)
-000397 940e 021d 	CALL _st7920_wrbus_G102
+0003b4 e3a0      	LDI  R26,LOW(48)
+0003b5 940e 023b 	CALL _st7920_wrbus_G103
                 +
-000399 e280     +LDI R24 , LOW ( 800 )
-00039a e093     +LDI R25 , HIGH ( 800 )
+0003b7 e280     +LDI R24 , LOW ( 800 )
+0003b8 e093     +LDI R25 , HIGH ( 800 )
                 +__DELAY_USW_LOOP :
-00039b 9701     +SBIW R24 , 1
-00039c f7f1     +BRNE __DELAY_USW_LOOP
+0003b9 9701     +SBIW R24 , 1
+0003ba f7f1     +BRNE __DELAY_USW_LOOP
                  	__DELAY_USW 800
-00039d 9508      	RET
+0003bb 9508      	RET
                  
                  ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:1 WORDS
                  SUBOPT_0x3:
-00039e 93ba      	ST   -Y,R27
-00039f 93aa      	ST   -Y,R26
-0003a0 81a8      	LD   R26,Y
-0003a1 81b9      	LDD  R27,Y+1
-0003a2 940e 041c 	CALL __CPW02
-0003a4 9508      	RET
+0003bc 93ba      	ST   -Y,R27
+0003bd 93aa      	ST   -Y,R26
+0003be 81a8      	LD   R26,Y
+0003bf 81b9      	LDD  R27,Y+1
+0003c0 940e 043a 	CALL __CPW02
+0003c2 9508      	RET
                  
                  
                  	.CSEG
@@ -2374,191 +2601,191 @@ G:\TAM\K\AVR\May Say V2 PCB AT32A\Debug\List\MS_V2_PCB.asm(1215): warning: .cseg
                  	.equ __i2c_pin=__i2c_port-2
                  
                  _i2c_init:
-0003a5 9897      	cbi  __i2c_port,__scl_bit
-0003a6 9896      	cbi  __i2c_port,__sda_bit
-0003a7 9a8f      	sbi  __i2c_dir,__scl_bit
-0003a8 988e      	cbi  __i2c_dir,__sda_bit
-0003a9 c015      	rjmp __i2c_delay2
+0003c3 9897      	cbi  __i2c_port,__scl_bit
+0003c4 9896      	cbi  __i2c_port,__sda_bit
+0003c5 9a8f      	sbi  __i2c_dir,__scl_bit
+0003c6 988e      	cbi  __i2c_dir,__sda_bit
+0003c7 c015      	rjmp __i2c_delay2
                  _i2c_start:
-0003aa 988e      	cbi  __i2c_dir,__sda_bit
-0003ab 988f      	cbi  __i2c_dir,__scl_bit
-0003ac 27ee      	clr  r30
-0003ad 0000      	nop
-0003ae 9b86      	sbis __i2c_pin,__sda_bit
-0003af 9508      	ret
-0003b0 9b87      	sbis __i2c_pin,__scl_bit
-0003b1 9508      	ret
-0003b2 d004      	rcall __i2c_delay1
-0003b3 9a8e      	sbi  __i2c_dir,__sda_bit
-0003b4 d002      	rcall __i2c_delay1
-0003b5 9a8f      	sbi  __i2c_dir,__scl_bit
-0003b6 e0e1      	ldi  r30,1
+0003c8 988e      	cbi  __i2c_dir,__sda_bit
+0003c9 988f      	cbi  __i2c_dir,__scl_bit
+0003ca 27ee      	clr  r30
+0003cb 0000      	nop
+0003cc 9b86      	sbis __i2c_pin,__sda_bit
+0003cd 9508      	ret
+0003ce 9b87      	sbis __i2c_pin,__scl_bit
+0003cf 9508      	ret
+0003d0 d004      	rcall __i2c_delay1
+0003d1 9a8e      	sbi  __i2c_dir,__sda_bit
+0003d2 d002      	rcall __i2c_delay1
+0003d3 9a8f      	sbi  __i2c_dir,__scl_bit
+0003d4 e0e1      	ldi  r30,1
                  __i2c_delay1:
-0003b7 e16b      	ldi  r22,27
-0003b8 c007      	rjmp __i2c_delay2l
+0003d5 e16b      	ldi  r22,27
+0003d6 c007      	rjmp __i2c_delay2l
                  _i2c_stop:
-0003b9 9a8e      	sbi  __i2c_dir,__sda_bit
-0003ba 9a8f      	sbi  __i2c_dir,__scl_bit
-0003bb d003      	rcall __i2c_delay2
-0003bc 988f      	cbi  __i2c_dir,__scl_bit
-0003bd dff9      	rcall __i2c_delay1
-0003be 988e      	cbi  __i2c_dir,__sda_bit
-                 __i2c_delay2:
-0003bf e365      	ldi  r22,53
-                 __i2c_delay2l:
-0003c0 956a      	dec  r22
-0003c1 f7f1      	brne __i2c_delay2l
-0003c2 9508      	ret
-                 _i2c_read:
-0003c3 e078      	ldi  r23,8
-                 __i2c_read0:
-0003c4 988f      	cbi  __i2c_dir,__scl_bit
-0003c5 dff1      	rcall __i2c_delay1
-                 __i2c_read3:
-0003c6 9b87      	sbis __i2c_pin,__scl_bit
-0003c7 cffe      	rjmp __i2c_read3
-0003c8 dfee      	rcall __i2c_delay1
-0003c9 9488      	clc
-0003ca 9986      	sbic __i2c_pin,__sda_bit
-0003cb 9408      	sec
-0003cc 9a8f      	sbi  __i2c_dir,__scl_bit
-0003cd dff1      	rcall __i2c_delay2
-0003ce 1fee      	rol  r30
-0003cf 957a      	dec  r23
-0003d0 f799      	brne __i2c_read0
-0003d1 2f7a      	mov  r23,r26
-0003d2 2377      	tst  r23
-0003d3 f411      	brne __i2c_read1
-0003d4 988e      	cbi  __i2c_dir,__sda_bit
-0003d5 c001      	rjmp __i2c_read2
-                 __i2c_read1:
-0003d6 9a8e      	sbi  __i2c_dir,__sda_bit
-                 __i2c_read2:
-0003d7 dfdf      	rcall __i2c_delay1
-0003d8 988f      	cbi  __i2c_dir,__scl_bit
-0003d9 dfe5      	rcall __i2c_delay2
-0003da 9a8f      	sbi  __i2c_dir,__scl_bit
-0003db dfdb      	rcall __i2c_delay1
+0003d7 9a8e      	sbi  __i2c_dir,__sda_bit
+0003d8 9a8f      	sbi  __i2c_dir,__scl_bit
+0003d9 d003      	rcall __i2c_delay2
+0003da 988f      	cbi  __i2c_dir,__scl_bit
+0003db dff9      	rcall __i2c_delay1
 0003dc 988e      	cbi  __i2c_dir,__sda_bit
-0003dd cfd9      	rjmp __i2c_delay1
+                 __i2c_delay2:
+0003dd e365      	ldi  r22,53
+                 __i2c_delay2l:
+0003de 956a      	dec  r22
+0003df f7f1      	brne __i2c_delay2l
+0003e0 9508      	ret
+                 _i2c_read:
+0003e1 e078      	ldi  r23,8
+                 __i2c_read0:
+0003e2 988f      	cbi  __i2c_dir,__scl_bit
+0003e3 dff1      	rcall __i2c_delay1
+                 __i2c_read3:
+0003e4 9b87      	sbis __i2c_pin,__scl_bit
+0003e5 cffe      	rjmp __i2c_read3
+0003e6 dfee      	rcall __i2c_delay1
+0003e7 9488      	clc
+0003e8 9986      	sbic __i2c_pin,__sda_bit
+0003e9 9408      	sec
+0003ea 9a8f      	sbi  __i2c_dir,__scl_bit
+0003eb dff1      	rcall __i2c_delay2
+0003ec 1fee      	rol  r30
+0003ed 957a      	dec  r23
+0003ee f799      	brne __i2c_read0
+0003ef 2f7a      	mov  r23,r26
+0003f0 2377      	tst  r23
+0003f1 f411      	brne __i2c_read1
+0003f2 988e      	cbi  __i2c_dir,__sda_bit
+0003f3 c001      	rjmp __i2c_read2
+                 __i2c_read1:
+0003f4 9a8e      	sbi  __i2c_dir,__sda_bit
+                 __i2c_read2:
+0003f5 dfdf      	rcall __i2c_delay1
+0003f6 988f      	cbi  __i2c_dir,__scl_bit
+0003f7 dfe5      	rcall __i2c_delay2
+0003f8 9a8f      	sbi  __i2c_dir,__scl_bit
+0003f9 dfdb      	rcall __i2c_delay1
+0003fa 988e      	cbi  __i2c_dir,__sda_bit
+0003fb cfd9      	rjmp __i2c_delay1
                  
                  _i2c_write:
-0003de e078      	ldi  r23,8
+0003fc e078      	ldi  r23,8
                  __i2c_write0:
-0003df 0faa      	lsl  r26
-0003e0 f410      	brcc __i2c_write1
-0003e1 988e      	cbi  __i2c_dir,__sda_bit
-0003e2 c001      	rjmp __i2c_write2
+0003fd 0faa      	lsl  r26
+0003fe f410      	brcc __i2c_write1
+0003ff 988e      	cbi  __i2c_dir,__sda_bit
+000400 c001      	rjmp __i2c_write2
                  __i2c_write1:
-0003e3 9a8e      	sbi  __i2c_dir,__sda_bit
+000401 9a8e      	sbi  __i2c_dir,__sda_bit
                  __i2c_write2:
-0003e4 dfda      	rcall __i2c_delay2
-0003e5 988f      	cbi  __i2c_dir,__scl_bit
-0003e6 dfd0      	rcall __i2c_delay1
+000402 dfda      	rcall __i2c_delay2
+000403 988f      	cbi  __i2c_dir,__scl_bit
+000404 dfd0      	rcall __i2c_delay1
                  __i2c_write3:
-0003e7 9b87      	sbis __i2c_pin,__scl_bit
-0003e8 cffe      	rjmp __i2c_write3
-0003e9 dfcd      	rcall __i2c_delay1
-0003ea 9a8f      	sbi  __i2c_dir,__scl_bit
-0003eb 957a      	dec  r23
-0003ec f791      	brne __i2c_write0
-0003ed 988e      	cbi  __i2c_dir,__sda_bit
-0003ee dfc8      	rcall __i2c_delay1
-0003ef 988f      	cbi  __i2c_dir,__scl_bit
-0003f0 dfce      	rcall __i2c_delay2
-0003f1 e0e1      	ldi  r30,1
-0003f2 9986      	sbic __i2c_pin,__sda_bit
-0003f3 27ee      	clr  r30
-0003f4 9a8f      	sbi  __i2c_dir,__scl_bit
-0003f5 cfc1      	rjmp __i2c_delay1
+000405 9b87      	sbis __i2c_pin,__scl_bit
+000406 cffe      	rjmp __i2c_write3
+000407 dfcd      	rcall __i2c_delay1
+000408 9a8f      	sbi  __i2c_dir,__scl_bit
+000409 957a      	dec  r23
+00040a f791      	brne __i2c_write0
+00040b 988e      	cbi  __i2c_dir,__sda_bit
+00040c dfc8      	rcall __i2c_delay1
+00040d 988f      	cbi  __i2c_dir,__scl_bit
+00040e dfce      	rcall __i2c_delay2
+00040f e0e1      	ldi  r30,1
+000410 9986      	sbic __i2c_pin,__sda_bit
+000411 27ee      	clr  r30
+000412 9a8f      	sbi  __i2c_dir,__scl_bit
+000413 cfc1      	rjmp __i2c_delay1
                  
                  _delay_ms:
-0003f6 9610      	adiw r26,0
-0003f7 f039      	breq __delay_ms1
+000414 9610      	adiw r26,0
+000415 f039      	breq __delay_ms1
                  __delay_ms0:
                 +
-0003f8 ea80     +LDI R24 , LOW ( 0xFA0 )
-0003f9 e09f     +LDI R25 , HIGH ( 0xFA0 )
+000416 ea80     +LDI R24 , LOW ( 0xFA0 )
+000417 e09f     +LDI R25 , HIGH ( 0xFA0 )
                 +__DELAY_USW_LOOP :
-0003fa 9701     +SBIW R24 , 1
-0003fb f7f1     +BRNE __DELAY_USW_LOOP
+000418 9701     +SBIW R24 , 1
+000419 f7f1     +BRNE __DELAY_USW_LOOP
                  	__DELAY_USW 0xFA0
-0003fc 95a8      	wdr
-0003fd 9711      	sbiw r26,1
-0003fe f7c9      	brne __delay_ms0
+00041a 95a8      	wdr
+00041b 9711      	sbiw r26,1
+00041c f7c9      	brne __delay_ms0
                  __delay_ms1:
-0003ff 9508      	ret
+00041d 9508      	ret
                  
                  	.equ __w1_port=0x1B
                  	.equ __w1_bit=0x00
                  
                  _w1_init:
-000400 27ee      	clr  r30
-000401 98d8      	cbi  __w1_port,__w1_bit
-000402 9ad0      	sbi  __w1_port-1,__w1_bit
+00041e 27ee      	clr  r30
+00041f 98d8      	cbi  __w1_port,__w1_bit
+000420 9ad0      	sbi  __w1_port-1,__w1_bit
                 +
-000403 e880     +LDI R24 , LOW ( 0x780 )
-000404 e097     +LDI R25 , HIGH ( 0x780 )
+000421 e880     +LDI R24 , LOW ( 0x780 )
+000422 e097     +LDI R25 , HIGH ( 0x780 )
                 +__DELAY_USW_LOOP :
-000405 9701     +SBIW R24 , 1
-000406 f7f1     +BRNE __DELAY_USW_LOOP
+000423 9701     +SBIW R24 , 1
+000424 f7f1     +BRNE __DELAY_USW_LOOP
                  	__DELAY_USW 0x780
-000407 98d0      	cbi  __w1_port-1,__w1_bit
+000425 98d0      	cbi  __w1_port-1,__w1_bit
                 +
-000408 e48b     +LDI R24 , LOW ( 0x4B )
+000426 e48b     +LDI R24 , LOW ( 0x4B )
                 +__DELAY_USB_LOOP :
-000409 958a     +DEC R24
-00040a f7f1     +BRNE __DELAY_USB_LOOP
+000427 958a     +DEC R24
+000428 f7f1     +BRNE __DELAY_USB_LOOP
                  	__DELAY_USB 0x4B
-00040b 9bc8      	sbis __w1_port-2,__w1_bit
-00040c 9508      	ret
+000429 9bc8      	sbis __w1_port-2,__w1_bit
+00042a 9508      	ret
                 +
-00040d e380     +LDI R24 , LOW ( 0x130 )
-00040e e091     +LDI R25 , HIGH ( 0x130 )
+00042b e380     +LDI R24 , LOW ( 0x130 )
+00042c e091     +LDI R25 , HIGH ( 0x130 )
                 +__DELAY_USW_LOOP :
-00040f 9701     +SBIW R24 , 1
-000410 f7f1     +BRNE __DELAY_USW_LOOP
+00042d 9701     +SBIW R24 , 1
+00042e f7f1     +BRNE __DELAY_USW_LOOP
                  	__DELAY_USW 0x130
-000411 9bc8      	sbis __w1_port-2,__w1_bit
-000412 e0e1      	ldi  r30,1
+00042f 9bc8      	sbis __w1_port-2,__w1_bit
+000430 e0e1      	ldi  r30,1
                 +
-000413 e188     +LDI R24 , LOW ( 0x618 )
-000414 e096     +LDI R25 , HIGH ( 0x618 )
+000431 e188     +LDI R24 , LOW ( 0x618 )
+000432 e096     +LDI R25 , HIGH ( 0x618 )
                 +__DELAY_USW_LOOP :
-000415 9701     +SBIW R24 , 1
-000416 f7f1     +BRNE __DELAY_USW_LOOP
+000433 9701     +SBIW R24 , 1
+000434 f7f1     +BRNE __DELAY_USW_LOOP
                  	__DELAY_USW 0x618
-000417 9508      	ret
+000435 9508      	ret
                  
                  __GETW1P:
-000418 91ed      	LD   R30,X+
-000419 91fc      	LD   R31,X
-00041a 9711      	SBIW R26,1
-00041b 9508      	RET
+000436 91ed      	LD   R30,X+
+000437 91fc      	LD   R31,X
+000438 9711      	SBIW R26,1
+000439 9508      	RET
                  
                  __CPW02:
-00041c 2400      	CLR  R0
-00041d 160a      	CP   R0,R26
-00041e 060b      	CPC  R0,R27
-00041f 9508      	RET
+00043a 2400      	CLR  R0
+00043b 160a      	CP   R0,R26
+00043c 060b      	CPC  R0,R27
+00043d 9508      	RET
                  
                  __SAVELOCR4:
-000420 933a      	ST   -Y,R19
+00043e 933a      	ST   -Y,R19
                  __SAVELOCR3:
-000421 932a      	ST   -Y,R18
+00043f 932a      	ST   -Y,R18
                  __SAVELOCR2:
-000422 931a      	ST   -Y,R17
-000423 930a      	ST   -Y,R16
-000424 9508      	RET
+000440 931a      	ST   -Y,R17
+000441 930a      	ST   -Y,R16
+000442 9508      	RET
                  
                  __LOADLOCR4:
-000425 813b      	LDD  R19,Y+3
+000443 813b      	LDD  R19,Y+3
                  __LOADLOCR3:
-000426 812a      	LDD  R18,Y+2
+000444 812a      	LDD  R18,Y+2
                  __LOADLOCR2:
-000427 8119      	LDD  R17,Y+1
-000428 8108      	LD   R16,Y
-000429 9508      	RET
+000445 8119      	LDD  R17,Y+1
+000446 8108      	LD   R16,Y
+000447 9508      	RET
                  
                  ;END OF CODE MARKER
                  __END_OF_CODE:
@@ -2582,7 +2809,7 @@ ATmega32A register use summary:
 r0 :   7 r1 :   1 r2 :   0 r3 :   0 r4 :   0 r5 :   0 r6 :   0 r7 :   0 
 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 r13:   0 r14:   0 r15:   0 
 r16:   6 r17:   5 r18:   2 r19:   5 r20:   0 r21:   0 r22:   7 r23:   6 
-r24:  23 r25:   8 r26:  63 r27:  21 r28:   8 r29:   1 r30: 172 r31:  23 
+r24:  23 r25:   8 r26:  63 r27:  21 r28:   8 r29:   1 r30: 180 r31:  23 
 x  :   5 y  :  85 z  :   8 
 Registers used: 19 out of 35 (54.3%)
 
@@ -2592,15 +2819,15 @@ adiw  :   9 and   :   0 andi  :  11 asr   :   0 bclr  :   0 bld   :   0
 brbc  :   0 brbs  :   0 brcc  :   1 brcs  :   0 break :   0 breq  :  18 
 brge  :   0 brhc  :   0 brhs  :   0 brid  :   0 brie  :   0 brlo  :   1 
 brlt  :   4 brmi  :   0 brne  :  17 brpl  :   0 brsh  :   1 brtc  :   0 
-brts  :   0 brvc  :   0 brvs  :   0 bset  :   0 bst   :   0 call  :  27 
+brts  :   0 brvc  :   0 brvs  :   0 bset  :   0 bst   :   0 call  :  29 
 cbi   :  40 cbr   :   0 clc   :   1 clh   :   0 cli   :   1 cln   :   0 
 clr   :   8 cls   :   0 clt   :   0 clv   :   0 clz   :   0 com   :   0 
 cp    :   1 cpc   :   3 cpi   :  10 cpse  :   0 dec   :   6 des   :   0 
 eor   :   0 fmul  :   0 fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 
-in    :   1 inc   :   0 jmp   :  24 ld    :  28 ldd   :  25 ldi   : 106 
+in    :   1 inc   :   0 jmp   :  24 ld    :  28 ldd   :  25 ldi   : 107 
 lds   :   3 lpm   :   7 lsl   :   1 lsr   :   0 mov   :   9 movw  :   4 
 mul   :   0 muls  :   0 mulsu :   0 neg   :   0 nop   :   4 or    :   0 
-ori   :   8 out   :  21 pop   :   0 push  :   0 rcall :  39 ret   :  19 
+ori   :   8 out   :  28 pop   :   0 push  :   0 rcall :  37 ret   :  19 
 reti  :   2 rjmp  :  36 rol   :   1 ror   :   0 sbc   :   0 sbci  :   0 
 sbi   :  38 sbic  :   3 sbis  :   6 sbiw  :  14 sbr   :   0 sbrc  :   0 
 sbrs  :   0 sec   :   1 seh   :   0 sei   :   1 sen   :   0 ser   :   0 
@@ -2612,8 +2839,8 @@ Instructions used: 48 out of 116 (41.4%)
 ATmega32A memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000854   1406    726   2132   32768   6.5%
+[.cseg] 0x000000 0x000890   1426    766   2192   32768   6.7%
 [.dseg] 0x000060 0x00028e      0     46     46    2048   2.2%
-[.eseg] 0x000000 0x000000      0      0      0    1024   0.0%
+[.eseg] 0x000000 0x000001      0      1      1    1024   0.1%
 
-Assembly complete, 0 errors, 3 warnings
+Assembly complete, 0 errors, 6 warnings

@@ -1083,6 +1083,11 @@ __DELAY_USW_LOOP:
 	ADD  R31,R0
 	.ENDM
 
+;NAME DEFINITIONS FOR GLOBAL VARIABLES ALLOCATED TO REGISTERS
+	.DEF _hour=R5
+	.DEF _minute=R4
+	.DEF _sec=R7
+
 	.CSEG
 	.ORG 0x00
 
@@ -1099,9 +1104,9 @@ __START_OF_CODE:
 	JMP  0x00
 	JMP  0x00
 	JMP  0x00
+	JMP  _timer1_ovf_isr
 	JMP  0x00
 	JMP  0x00
-	JMP  _timer0_ovf_isr
 	JMP  0x00
 	JMP  0x00
 	JMP  0x00
@@ -1198,26 +1203,35 @@ _font5x7:
 	.DB  0x4,0x4,0x8,0x4,0x4,0x2,0x2,0x15
 	.DB  0x8,0x0,0x0,0x0,0x0,0x1F,0x11,0x11
 	.DB  0x11,0x11,0x11,0x1F
-_conv_delay_G101:
+_tbl10_G100:
+	.DB  0x10,0x27,0xE8,0x3,0x64,0x0,0xA,0x0
+	.DB  0x1,0x0
+_tbl16_G100:
+	.DB  0x0,0x10,0x0,0x1,0x10,0x0,0x1,0x0
+_conv_delay_G102:
 	.DB  0x64,0x0,0xC8,0x0,0x90,0x1,0x20,0x3
-_bit_mask_G101:
+_bit_mask_G102:
 	.DB  0xF8,0xFF,0xFC,0xFF,0xFE,0xFF,0xFF,0xFF
 __glcd_mask:
 	.DB  0x0,0x1,0x3,0x7,0xF,0x1F,0x3F,0x7F
 	.DB  0xFF
-_st7920_base_y_G102:
+_st7920_base_y_G103:
 	.DB  0x80,0x90,0x88,0x98
 
-_0x2140060:
+_0x0:
+	.DB  0x54,0x3A,0x25,0x32,0x2E,0x30,0x66,0x0
+	.DB  0x6F,0x0,0x43,0x0,0x48,0x3A,0x25,0x32
+	.DB  0x2E,0x30,0x66,0x0,0x25,0x0
+_0x2180060:
 	.DB  0x1
-_0x2140000:
+_0x2180000:
 	.DB  0x2D,0x4E,0x41,0x4E,0x0,0x49,0x4E,0x46
 	.DB  0x0
 
 __GLOBAL_INI_TBL:
 	.DW  0x01
-	.DW  __seed_G10A
-	.DW  _0x2140060*2
+	.DW  __seed_G10C
+	.DW  _0x2180060*2
 
 _0xFFFFFFFF:
 	.DW  0
@@ -1300,9 +1314,6 @@ __GLOBAL_INI_END:
 ;Version : 01
 ;Date    : 1/11/2018
 ;Author  : AT
-;Company :
-;Comments:
-;
 ;
 ;Chip type               : ATmega32A
 ;Program type            : Application
@@ -1324,6 +1335,7 @@ __GLOBAL_INI_END:
 	.EQU __sm_adc_noise_red=0x10
 	.SET power_ctrl_reg=mcucr
 	#endif
+;#include <stdio.h>
 ;// I2C Bus functions
 ;#include <i2c.h>
 ;// DS1307 Real Time Clock functions
@@ -1341,203 +1353,404 @@ __GLOBAL_INI_END:
 ;#include "LIB/exlib.h"
 ;// DHT library
 ;#include <DHT.h>
-;// Declare your global variables here
 ;
+;//Define ouput
+;#define Q_N     PORTB.7
+;#define MOTOR   PORTB.6
+;#define VAN     PORTB.5
+;#define DTN     PORTB.4
+;#define Q_L     PORTB.3
+;#define M_NEN   PORTB.2
+;#define LAMP    PORTB.1
+;#define DP      PORTB.0
+;// Declare your global variables here
+;unsigned char hour,minute,sec;
+;eeprom unsigned char mTempSet;
+;
+;/*******************  FUNCTION  *****************************/
+;void getTime();
+;void tempDisplay(unsigned char x, unsigned char y);
+;void timeSettingDisplay(unsigned char x, unsigned char y);
+;void tempSettingDisplay(unsigned char x, unsigned char y);
+;void statusDisplay(unsigned char x, unsigned char y);
+;void processOn(unsigned char tempSet);
+;void processOff();
+;/***********************************************************/
 ;// External Interrupt 0 service routine
 ;interrupt [EXT_INT0] void ext_int0_isr(void)
-; 0000 0028 {
+; 0000 003B {
 
 	.CSEG
 _ext_int0_isr:
 ; .FSTART _ext_int0_isr
-; 0000 0029 // Place your code here
-; 0000 002A 
-; 0000 002B }
+; 0000 003C // Place your code here
+; 0000 003D 
+; 0000 003E }
 	RETI
 ; .FEND
 ;
-;// Timer 0 overflow interrupt service routine
-;interrupt [TIM0_OVF] void timer0_ovf_isr(void)
-; 0000 002F {
-_timer0_ovf_isr:
-; .FSTART _timer0_ovf_isr
-; 0000 0030 // Place your code here
-; 0000 0031 
-; 0000 0032 }
+;// Timer 1 overflow interrupt service routine (1.0486s)
+;
+;interrupt [TIM1_OVF] void timer1_ovf_isr(void)
+; 0000 0043 {
+_timer1_ovf_isr:
+; .FSTART _timer1_ovf_isr
+; 0000 0044 // Place your code here
+; 0000 0045 
+; 0000 0046 }
 	RETI
 ; .FEND
 ;
 ;void main(void)
-; 0000 0035 {
+; 0000 0049 {
 _main:
 ; .FSTART _main
-; 0000 0036 // Declare your local variables here
-; 0000 0037 // Variable used to store graphic display
-; 0000 0038 // controller initialization data
-; 0000 0039 GLCDINIT_t glcd_init_data;
-; 0000 003A 
-; 0000 003B // Input/Output Ports initialization
-; 0000 003C // Port A initialization
-; 0000 003D // Function: Bit7=Out Bit6=Out Bit5=Out Bit4=Out Bit3=In Bit2=In Bit1=In Bit0=In
-; 0000 003E DDRA=(1<<DDA7) | (1<<DDA6) | (1<<DDA5) | (1<<DDA4) | (0<<DDA3) | (0<<DDA2) | (0<<DDA1) | (0<<DDA0);
+; 0000 004A // Declare your local variables here
+; 0000 004B // Variable used to store graphic display
+; 0000 004C // controller initialization data
+; 0000 004D GLCDINIT_t glcd_init_data;
+; 0000 004E 
+; 0000 004F // Input/Output Ports initialization
+; 0000 0050 // Port A initialization
+; 0000 0051 // Function: Bit7=Out Bit6=Out Bit5=Out Bit4=Out Bit3=In Bit2=In Bit1=In Bit0=In
+; 0000 0052 DDRA=(1<<DDA7) | (1<<DDA6) | (1<<DDA5) | (1<<DDA4) | (0<<DDA3) | (0<<DDA2) | (0<<DDA1) | (0<<DDA0);
 	SBIW R28,6
 ;	glcd_init_data -> Y+0
 	LDI  R30,LOW(240)
 	OUT  0x1A,R30
-; 0000 003F // State: Bit7=0 Bit6=0 Bit5=0 Bit4=0 Bit3=P Bit2=T Bit1=T Bit0=T
-; 0000 0040 PORTA=(0<<PORTA7) | (0<<PORTA6) | (0<<PORTA5) | (0<<PORTA4) | (1<<PORTA3) | (0<<PORTA2) | (0<<PORTA1) | (0<<PORTA0);
+; 0000 0053 // State: Bit7=0 Bit6=0 Bit5=0 Bit4=0 Bit3=P Bit2=T Bit1=T Bit0=T
+; 0000 0054 PORTA=(0<<PORTA7) | (0<<PORTA6) | (0<<PORTA5) | (0<<PORTA4) | (1<<PORTA3) | (0<<PORTA2) | (0<<PORTA1) | (0<<PORTA0);
 	LDI  R30,LOW(8)
 	OUT  0x1B,R30
-; 0000 0041 
-; 0000 0042 // Port B initialization
-; 0000 0043 // Function: Bit7=Out Bit6=Out Bit5=Out Bit4=Out Bit3=Out Bit2=Out Bit1=Out Bit0=Out
-; 0000 0044 DDRB=(1<<DDB7) | (1<<DDB6) | (1<<DDB5) | (1<<DDB4) | (1<<DDB3) | (1<<DDB2) | (1<<DDB1) | (1<<DDB0);
+; 0000 0055 
+; 0000 0056 // Port B initialization
+; 0000 0057 // Function: Bit7=Out Bit6=Out Bit5=Out Bit4=Out Bit3=Out Bit2=Out Bit1=Out Bit0=Out
+; 0000 0058 DDRB=(1<<DDB7) | (1<<DDB6) | (1<<DDB5) | (1<<DDB4) | (1<<DDB3) | (1<<DDB2) | (1<<DDB1) | (1<<DDB0);
 	LDI  R30,LOW(255)
 	OUT  0x17,R30
-; 0000 0045 // State: Bit7=0 Bit6=0 Bit5=0 Bit4=0 Bit3=0 Bit2=0 Bit1=0 Bit0=0
-; 0000 0046 PORTB=(0<<PORTB7) | (0<<PORTB6) | (0<<PORTB5) | (0<<PORTB4) | (0<<PORTB3) | (0<<PORTB2) | (0<<PORTB1) | (0<<PORTB0);
+; 0000 0059 // State: Bit7=0 Bit6=0 Bit5=0 Bit4=0 Bit3=0 Bit2=0 Bit1=0 Bit0=0
+; 0000 005A PORTB=(0<<PORTB7) | (0<<PORTB6) | (0<<PORTB5) | (0<<PORTB4) | (0<<PORTB3) | (0<<PORTB2) | (0<<PORTB1) | (0<<PORTB0);
 	LDI  R30,LOW(0)
 	OUT  0x18,R30
-; 0000 0047 
-; 0000 0048 // Port C initialization
-; 0000 0049 // Function: Bit7=Out Bit6=Out Bit5=Out Bit4=Out Bit3=Out Bit2=Out Bit1=Out Bit0=Out
-; 0000 004A DDRC=(1<<DDC7) | (1<<DDC6) | (1<<DDC5) | (1<<DDC4) | (1<<DDC3) | (1<<DDC2) | (1<<DDC1) | (1<<DDC0);
+; 0000 005B 
+; 0000 005C // Port C initialization
+; 0000 005D // Function: Bit7=Out Bit6=Out Bit5=Out Bit4=Out Bit3=Out Bit2=Out Bit1=Out Bit0=Out
+; 0000 005E DDRC=(1<<DDC7) | (1<<DDC6) | (1<<DDC5) | (1<<DDC4) | (1<<DDC3) | (1<<DDC2) | (1<<DDC1) | (1<<DDC0);
 	LDI  R30,LOW(255)
 	OUT  0x14,R30
-; 0000 004B // State: Bit7=0 Bit6=0 Bit5=0 Bit4=0 Bit3=0 Bit2=0 Bit1=0 Bit0=0
-; 0000 004C PORTC=(0<<PORTC7) | (0<<PORTC6) | (0<<PORTC5) | (0<<PORTC4) | (0<<PORTC3) | (0<<PORTC2) | (0<<PORTC1) | (0<<PORTC0);
+; 0000 005F // State: Bit7=0 Bit6=0 Bit5=0 Bit4=0 Bit3=0 Bit2=0 Bit1=0 Bit0=0
+; 0000 0060 PORTC=(0<<PORTC7) | (0<<PORTC6) | (0<<PORTC5) | (0<<PORTC4) | (0<<PORTC3) | (0<<PORTC2) | (0<<PORTC1) | (0<<PORTC0);
 	LDI  R30,LOW(0)
 	OUT  0x15,R30
-; 0000 004D 
-; 0000 004E // Port D initialization
-; 0000 004F // Function: Bit7=In Bit6=In Bit5=In Bit4=In Bit3=In Bit2=In Bit1=In Bit0=In
-; 0000 0050 DDRD=(0<<DDD7) | (0<<DDD6) | (0<<DDD5) | (0<<DDD4) | (0<<DDD3) | (0<<DDD2) | (0<<DDD1) | (0<<DDD0);
+; 0000 0061 
+; 0000 0062 // Port D initialization
+; 0000 0063 // Function: Bit7=In Bit6=In Bit5=In Bit4=In Bit3=In Bit2=In Bit1=In Bit0=In
+; 0000 0064 DDRD=(0<<DDD7) | (0<<DDD6) | (0<<DDD5) | (0<<DDD4) | (0<<DDD3) | (0<<DDD2) | (0<<DDD1) | (0<<DDD0);
 	OUT  0x11,R30
-; 0000 0051 // State: Bit7=T Bit6=T Bit5=P Bit4=P Bit3=P Bit2=P Bit1=P Bit0=P
-; 0000 0052 PORTD=(0<<PORTD7) | (0<<PORTD6) | (1<<PORTD5) | (1<<PORTD4) | (1<<PORTD3) | (1<<PORTD2) | (1<<PORTD1) | (1<<PORTD0);
+; 0000 0065 // State: Bit7=T Bit6=T Bit5=P Bit4=P Bit3=P Bit2=P Bit1=P Bit0=P
+; 0000 0066 PORTD=(0<<PORTD7) | (0<<PORTD6) | (1<<PORTD5) | (1<<PORTD4) | (1<<PORTD3) | (1<<PORTD2) | (1<<PORTD1) | (1<<PORTD0);
 	LDI  R30,LOW(63)
 	OUT  0x12,R30
-; 0000 0053 
-; 0000 0054 // Timer/Counter 0 initialization
-; 0000 0055 // Clock source: System Clock
-; 0000 0056 // Clock value: 62.500 kHz
-; 0000 0057 // Mode: Normal top=0xFF
-; 0000 0058 // OC0 output: Disconnected
-; 0000 0059 // Timer Period: 4.096 ms
-; 0000 005A TCCR0=(0<<WGM00) | (0<<COM01) | (0<<COM00) | (0<<WGM01) | (1<<CS02) | (0<<CS01) | (0<<CS00);
-	LDI  R30,LOW(4)
-	OUT  0x33,R30
-; 0000 005B TCNT0=0x00;
+; 0000 0067 
+; 0000 0068 // Timer/Counter 1 initialization
+; 0000 0069 // Clock source: System Clock
+; 0000 006A // Clock value: 62.500 kHz
+; 0000 006B // Mode: Normal top=0xFFFF
+; 0000 006C // OC1A output: Disconnected
+; 0000 006D // OC1B output: Disconnected
+; 0000 006E // Noise Canceler: Off
+; 0000 006F // Input Capture on Falling Edge
+; 0000 0070 // Timer Period: 1.0486 s
+; 0000 0071 // Timer1 Overflow Interrupt: On
+; 0000 0072 // Input Capture Interrupt: Off
+; 0000 0073 // Compare A Match Interrupt: Off
+; 0000 0074 // Compare B Match Interrupt: Off
+; 0000 0075 TCCR1A=(0<<COM1A1) | (0<<COM1A0) | (0<<COM1B1) | (0<<COM1B0) | (0<<WGM11) | (0<<WGM10);
 	LDI  R30,LOW(0)
-	OUT  0x32,R30
-; 0000 005C OCR0=0x00;
-	OUT  0x3C,R30
-; 0000 005D 
-; 0000 005E // Timer(s)/Counter(s) Interrupt(s) initialization
-; 0000 005F TIMSK=(0<<OCIE2) | (0<<TOIE2) | (0<<TICIE1) | (0<<OCIE1A) | (0<<OCIE1B) | (0<<TOIE1) | (0<<OCIE0) | (1<<TOIE0);
-	LDI  R30,LOW(1)
+	OUT  0x2F,R30
+; 0000 0076 TCCR1B=(0<<ICNC1) | (0<<ICES1) | (0<<WGM13) | (0<<WGM12) | (1<<CS12) | (0<<CS11) | (0<<CS10);
+	LDI  R30,LOW(4)
+	OUT  0x2E,R30
+; 0000 0077 TCNT1H=0x00;
+	LDI  R30,LOW(0)
+	OUT  0x2D,R30
+; 0000 0078 TCNT1L=0x00;
+	OUT  0x2C,R30
+; 0000 0079 ICR1H=0x00;
+	OUT  0x27,R30
+; 0000 007A ICR1L=0x00;
+	OUT  0x26,R30
+; 0000 007B OCR1AH=0x00;
+	OUT  0x2B,R30
+; 0000 007C OCR1AL=0x00;
+	OUT  0x2A,R30
+; 0000 007D OCR1BH=0x00;
+	OUT  0x29,R30
+; 0000 007E OCR1BL=0x00;
+	OUT  0x28,R30
+; 0000 007F 
+; 0000 0080 // Timer(s)/Counter(s) Interrupt(s) initialization
+; 0000 0081 TIMSK=(0<<OCIE2) | (0<<TOIE2) | (0<<TICIE1) | (0<<OCIE1A) | (0<<OCIE1B) | (1<<TOIE1) | (0<<OCIE0) | (0<<TOIE0);
+	LDI  R30,LOW(4)
 	OUT  0x39,R30
-; 0000 0060 
-; 0000 0061 // External Interrupt(s) initialization
-; 0000 0062 // INT0: On
-; 0000 0063 // INT0 Mode: Falling Edge
-; 0000 0064 // INT1: Off
-; 0000 0065 // INT2: Off
-; 0000 0066 GICR|=(0<<INT1) | (1<<INT0) | (0<<INT2);
+; 0000 0082 
+; 0000 0083 // External Interrupt(s) initialization
+; 0000 0084 // INT0: On
+; 0000 0085 // INT0 Mode: Falling Edge
+; 0000 0086 // INT1: Off
+; 0000 0087 // INT2: Off
+; 0000 0088 GICR|=(0<<INT1) | (1<<INT0) | (0<<INT2);
 	IN   R30,0x3B
 	ORI  R30,0x40
 	OUT  0x3B,R30
-; 0000 0067 MCUCR=(0<<ISC11) | (0<<ISC10) | (1<<ISC01) | (0<<ISC00);
+; 0000 0089 MCUCR=(0<<ISC11) | (0<<ISC10) | (1<<ISC01) | (0<<ISC00);
 	LDI  R30,LOW(2)
 	OUT  0x35,R30
-; 0000 0068 MCUCSR=(0<<ISC2);
+; 0000 008A MCUCSR=(0<<ISC2);
 	LDI  R30,LOW(0)
 	OUT  0x34,R30
-; 0000 0069 GIFR=(0<<INTF1) | (1<<INTF0) | (0<<INTF2);
+; 0000 008B GIFR=(0<<INTF1) | (1<<INTF0) | (0<<INTF2);
 	LDI  R30,LOW(64)
 	OUT  0x3A,R30
-; 0000 006A 
-; 0000 006B // Bit-Banged I2C Bus initialization
-; 0000 006C // I2C Port: PORTD
-; 0000 006D // I2C SDA bit: 6
-; 0000 006E // I2C SCL bit: 7
-; 0000 006F // Bit Rate: 100 kHz
-; 0000 0070 // Note: I2C settings are specified in the
-; 0000 0071 // Project|Configure|C Compiler|Libraries|I2C menu.
-; 0000 0072 i2c_init();
+; 0000 008C 
+; 0000 008D // Bit-Banged I2C Bus initialization
+; 0000 008E // I2C Port: PORTD
+; 0000 008F // I2C SDA bit: 6
+; 0000 0090 // I2C SCL bit: 7
+; 0000 0091 // Bit Rate: 100 kHz
+; 0000 0092 // Note: I2C settings are specified in the
+; 0000 0093 // Project|Configure|C Compiler|Libraries|I2C menu.
+; 0000 0094 i2c_init();
 	CALL _i2c_init
-; 0000 0073 
-; 0000 0074 // DS1307 Real Time Clock initialization
-; 0000 0075 // Square wave output on pin SQW/OUT: Off
-; 0000 0076 // SQW/OUT pin state: 0
-; 0000 0077 rtc_init(0,0,0);
+; 0000 0095 
+; 0000 0096 // DS1307 Real Time Clock initialization
+; 0000 0097 // Square wave output on pin SQW/OUT: Off
+; 0000 0098 // SQW/OUT pin state: 0
+; 0000 0099 rtc_init(0,0,0);
 	LDI  R30,LOW(0)
 	ST   -Y,R30
 	ST   -Y,R30
 	LDI  R26,LOW(0)
-	RCALL _rtc_init
-; 0000 0078 
-; 0000 0079 // 1 Wire Bus initialization
-; 0000 007A // 1 Wire Data port: PORTA
-; 0000 007B // 1 Wire Data bit: 0
-; 0000 007C // Note: 1 Wire port settings are specified in the
-; 0000 007D // Project|Configure|C Compiler|Libraries|1 Wire menu.
-; 0000 007E w1_init();
+	CALL _rtc_init
+; 0000 009A 
+; 0000 009B // 1 Wire Bus initialization
+; 0000 009C // 1 Wire Data port: PORTA
+; 0000 009D // 1 Wire Data bit: 0
+; 0000 009E // Note: 1 Wire port settings are specified in the
+; 0000 009F // Project|Configure|C Compiler|Libraries|1 Wire menu.
+; 0000 00A0 w1_init();
 	CALL _w1_init
-; 0000 007F 
-; 0000 0080 // Graphic Display Controller initialization
-; 0000 0081 // The ST7920 connections are specified in the
-; 0000 0082 // Project|Configure|C Compiler|Libraries|Graphic Display menu:
-; 0000 0083 // DB0 - PORTC Bit 4
-; 0000 0084 // DB1 - PORTC Bit 5
-; 0000 0085 // DB2 - PORTC Bit 6
-; 0000 0086 // DB3 - PORTC Bit 7
-; 0000 0087 // DB4 - PORTA Bit 7
-; 0000 0088 // DB5 - PORTA Bit 6
-; 0000 0089 // DB6 - PORTA Bit 5
-; 0000 008A // DB7 - PORTA Bit 4
-; 0000 008B // E - PORTC Bit 2
-; 0000 008C // R /W - PORTC Bit 1
-; 0000 008D // RS - PORTC Bit 0
-; 0000 008E // /RST - PORTC Bit 3
-; 0000 008F 
-; 0000 0090 // Specify the current font for displaying text
-; 0000 0091 glcd_init_data.font=font5x7;
+; 0000 00A1 
+; 0000 00A2 // Graphic Display Controller initialization
+; 0000 00A3 // The ST7920 connections are specified in the
+; 0000 00A4 // Project|Configure|C Compiler|Libraries|Graphic Display menu:
+; 0000 00A5 // DB0 - PORTC Bit 4
+; 0000 00A6 // DB1 - PORTC Bit 5
+; 0000 00A7 // DB2 - PORTC Bit 6
+; 0000 00A8 // DB3 - PORTC Bit 7
+; 0000 00A9 // DB4 - PORTA Bit 7
+; 0000 00AA // DB5 - PORTA Bit 6
+; 0000 00AB // DB6 - PORTA Bit 5
+; 0000 00AC // DB7 - PORTA Bit 4
+; 0000 00AD // E - PORTC Bit 2
+; 0000 00AE // R /W - PORTC Bit 1
+; 0000 00AF // RS - PORTC Bit 0
+; 0000 00B0 // /RST - PORTC Bit 3
+; 0000 00B1 
+; 0000 00B2 // Specify the current font for displaying text
+; 0000 00B3 glcd_init_data.font=font5x7;
 	LDI  R30,LOW(_font5x7*2)
 	LDI  R31,HIGH(_font5x7*2)
 	ST   Y,R30
 	STD  Y+1,R31
-; 0000 0092 // No function is used for reading
-; 0000 0093 // image data from external memory
-; 0000 0094 glcd_init_data.readxmem=NULL;
+; 0000 00B4 // No function is used for reading
+; 0000 00B5 // image data from external memory
+; 0000 00B6 glcd_init_data.readxmem=NULL;
 	LDI  R30,LOW(0)
 	STD  Y+2,R30
 	STD  Y+2+1,R30
-; 0000 0095 // No function is used for writing
-; 0000 0096 // image data to external memory
-; 0000 0097 glcd_init_data.writexmem=NULL;
+; 0000 00B7 // No function is used for writing
+; 0000 00B8 // image data to external memory
+; 0000 00B9 glcd_init_data.writexmem=NULL;
 	STD  Y+4,R30
 	STD  Y+4+1,R30
-; 0000 0098 
-; 0000 0099 glcd_init(&glcd_init_data);
+; 0000 00BA 
+; 0000 00BB glcd_init(&glcd_init_data);
 	MOVW R26,R28
-	RCALL _glcd_init
-; 0000 009A 
-; 0000 009B // Global enable interrupts
-; 0000 009C #asm("sei")
+	CALL _glcd_init
+; 0000 00BC 
+; 0000 00BD // Global enable interrupts
+; 0000 00BE #asm("sei")
 	sei
-; 0000 009D 
-; 0000 009E while (1)
+; 0000 00BF 
+; 0000 00C0 while (1)
 _0x3:
-; 0000 009F       {
-; 0000 00A0       // Place your code here
-; 0000 00A1 
-; 0000 00A2       }
+; 0000 00C1       {
+; 0000 00C2 
+; 0000 00C3       }
 	RJMP _0x3
-; 0000 00A3 }
+; 0000 00C4 }
 _0x6:
 	RJMP _0x6
 ; .FEND
+;
+;/******************  FUNCTION  *******************************/
+;
+;/**
+;    @brief: Get real-time from DS1307
+;    @prama: None
+;    @retval: None
+;*/
+;void getTime()
+; 0000 00CE {
+; 0000 00CF     rtc_get_time(&hour,&minute,&sec);
+; 0000 00D0 }
+;
+;/**
+;    @brief: Display temperature & humidity on LCD 128x64
+;    @prama: - x: Horizontal axis (0-127)
+;            - y: Vertical axis (0-63)
+;    @retval: None
+;*/
+;void tempDisplay(unsigned char x, unsigned char y)
+; 0000 00D9 {
+; 0000 00DA     float temperature,humidity;
+; 0000 00DB     char lcdBuff[10];
+; 0000 00DC     //#asm("cli");
+; 0000 00DD     temperature=DHT_GetTemHumi(DHT_ND);
+;	x -> Y+19
+;	y -> Y+18
+;	temperature -> Y+14
+;	humidity -> Y+10
+;	lcdBuff -> Y+0
+; 0000 00DE     humidity=DHT_GetTemHumi(DHT_DA);
+; 0000 00DF     //#asm("sei");
+; 0000 00E0     sprintf(lcdBuff,"T:%2.0f",temperature);
+; 0000 00E1     glcd_outtextxy(x,y+3,lcdBuff);
+; 0000 00E2     glcd_outtextxyf(x+25,y,"o");
+; 0000 00E3     glcd_outtextxyf(x+32,y+3,"C");
+; 0000 00E4 
+; 0000 00E5     sprintf(lcdBuff,"H:%2.0f",humidity);
+; 0000 00E6     glcd_outtextxy(x,y+13,lcdBuff);
+; 0000 00E7     glcd_outtextxyf(x+25,y+13,"%");
+; 0000 00E8 }
+;
+;/**
+;    @brief: Display time run setting on LCD 128x64
+;    @prama: - x: Horizontal axis (0-127)
+;            - y: Vertical axis (0-63)
+;    @retval: None
+;*/
+;void timeSettingDisplay(unsigned char x, unsigned char y)
+; 0000 00F1 {
+; 0000 00F2 
+; 0000 00F3 }
+;
+;/**
+;    @brief: Display temperature control setting on LCD 128x64
+;    @prama: - x: Horizontal axis (0-127)
+;            - y: Vertical axis (0-63)
+;    @retval: None
+;*/
+;void tempSettingDisplay(unsigned char x, unsigned char y)
+; 0000 00FC {
+; 0000 00FD 
+; 0000 00FE }
+;
+;/**
+;    @brief: Display status device (stop/running), Progress complete(%) on LCD 128x64
+;    @prama: - x: Horizontal axis (0-127)
+;            - y: Vertical axis (0-63)
+;    @retval: None
+;*/
+;void statusDisplay(unsigned char x, unsigned char y)
+; 0000 0107 {
+; 0000 0108 
+; 0000 0109 }
+;
+;/**
+;    @brief: Process turn ON device sequence by setting
+;    @prama: tempSet: Temperature setting for control heating at this temperature
+;    @retval: None
+;*/
+;void processOn(unsigned char tempSet)
+; 0000 0111 {
+; 0000 0112     unsigned char Htime,Mtime,Stime;
+; 0000 0113     bit flagTime;
+; 0000 0114     Q_N=1;
+;	tempSet -> Y+4
+;	Htime -> R17
+;	Mtime -> R16
+;	Stime -> R19
+;	flagTime -> R15.0
+; 0000 0115     MOTOR=1;
+; 0000 0116     flagTime=1;
+; 0000 0117     if(flagTime){
+; 0000 0118         Htime=hour;
+; 0000 0119         Mtime=minute;
+; 0000 011A         Stime=sec;
+; 0000 011B         flagTime=0;
+; 0000 011C     }
+; 0000 011D     while(flagTime==1);
+; 0000 011E     if(hour==Htime && minute==Mtime+1){
+; 0000 011F        Q_L=1;
+; 0000 0120        M_NEN=1;
+; 0000 0121     }
+; 0000 0122     if(hour==Htime && minute==Mtime+2){
+; 0000 0123 
+; 0000 0124     }
+; 0000 0125 
+; 0000 0126     /*when temp set > temp created by the compressor. this case,
+; 0000 0127      the compressor is always turn ON, this time just control heat resistance.
+; 0000 0128     */
+; 0000 0129     if(tempSet>mTempSet){
+; 0000 012A 
+; 0000 012B        if(minute>=1){
+; 0000 012C           Q_L=1;
+; 0000 012D           M_NEN=1;
+; 0000 012E           if(minute>=2){
+; 0000 012F             VAN=1;
+; 0000 0130             DTN=1;
+; 0000 0131           }
+; 0000 0132        }
+; 0000 0133     }
+; 0000 0134     /*when temp set < temp created by the compressor. this case,
+; 0000 0135      the heat resistance is always turn OFF, this time just control the compressor.
+; 0000 0136     */
+; 0000 0137     else{
+; 0000 0138        DTN=0;
+; 0000 0139        if(minute>=1){
+; 0000 013A             Q_L=1;
+; 0000 013B             M_NEN=1;
+; 0000 013C             if(minute>=2){
+; 0000 013D             VAN=1;
+; 0000 013E           }
+; 0000 013F        }
+; 0000 0140     }
+; 0000 0141 }
+;
+;/**
+;    @brief: Process turn OFF device sequence by setting
+;    @prama:
+;    @retval: None
+;*/
+;void processOff()
+; 0000 0149 {
+; 0000 014A 
+; 0000 014B }
+	#ifndef __SLEEP_DEFINED__
+	#define __SLEEP_DEFINED__
+	.EQU __se_bit=0x80
+	.EQU __sm_mask=0x70
+	.EQU __sm_powerdown=0x20
+	.EQU __sm_powersave=0x30
+	.EQU __sm_standby=0x60
+	.EQU __sm_ext_standby=0x70
+	.EQU __sm_adc_noise_red=0x10
+	.SET power_ctrl_reg=mcucr
+	#endif
+
+	.CSEG
 
 	.CSEG
 _rtc_init:
@@ -1548,18 +1761,18 @@ _rtc_init:
 	STD  Y+2,R30
 	LDD  R30,Y+1
 	CPI  R30,0
-	BREQ _0x2000003
+	BREQ _0x2020003
 	LDD  R30,Y+2
 	ORI  R30,0x10
 	STD  Y+2,R30
-_0x2000003:
+_0x2020003:
 	LD   R30,Y
 	CPI  R30,0
-	BREQ _0x2000004
+	BREQ _0x2020004
 	LDD  R30,Y+2
 	ORI  R30,0x80
 	STD  Y+2,R30
-_0x2000004:
+_0x2020004:
 	CALL _i2c_start
 	LDI  R26,LOW(208)
 	CALL _i2c_write
@@ -1586,15 +1799,15 @@ _0x2000004:
 	#endif
 
 	.CSEG
-_st7920_delay_G102:
-; .FSTART _st7920_delay_G102
+_st7920_delay_G103:
+; .FSTART _st7920_delay_G103
     nop
     nop
     nop
 	RET
 ; .FEND
-_st7920_wrbus_G102:
-; .FSTART _st7920_wrbus_G102
+_st7920_wrbus_G103:
+; .FSTART _st7920_wrbus_G103
 	ST   -Y,R26
 	CBI  0x15,1
 	SBI  0x15,2
@@ -1608,74 +1821,74 @@ _st7920_wrbus_G102:
 	SBI  0x1A,4
 	LD   R30,Y
 	ANDI R30,LOW(0x1)
-	BREQ _0x2040003
+	BREQ _0x2060003
 	SBI  0x15,4
-	RJMP _0x2040004
-_0x2040003:
+	RJMP _0x2060004
+_0x2060003:
 	CBI  0x15,4
-_0x2040004:
+_0x2060004:
 	LD   R30,Y
 	ANDI R30,LOW(0x2)
-	BREQ _0x2040005
+	BREQ _0x2060005
 	SBI  0x15,5
-	RJMP _0x2040006
-_0x2040005:
+	RJMP _0x2060006
+_0x2060005:
 	CBI  0x15,5
-_0x2040006:
+_0x2060006:
 	LD   R30,Y
 	ANDI R30,LOW(0x4)
-	BREQ _0x2040007
+	BREQ _0x2060007
 	SBI  0x15,6
-	RJMP _0x2040008
-_0x2040007:
+	RJMP _0x2060008
+_0x2060007:
 	CBI  0x15,6
-_0x2040008:
+_0x2060008:
 	LD   R30,Y
 	ANDI R30,LOW(0x8)
-	BREQ _0x2040009
+	BREQ _0x2060009
 	SBI  0x15,7
-	RJMP _0x204000A
-_0x2040009:
+	RJMP _0x206000A
+_0x2060009:
 	CBI  0x15,7
-_0x204000A:
+_0x206000A:
 	LD   R30,Y
 	ANDI R30,LOW(0x10)
-	BREQ _0x204000B
+	BREQ _0x206000B
 	SBI  0x1B,7
-	RJMP _0x204000C
-_0x204000B:
+	RJMP _0x206000C
+_0x206000B:
 	CBI  0x1B,7
-_0x204000C:
+_0x206000C:
 	LD   R30,Y
 	ANDI R30,LOW(0x20)
-	BREQ _0x204000D
+	BREQ _0x206000D
 	SBI  0x1B,6
-	RJMP _0x204000E
-_0x204000D:
+	RJMP _0x206000E
+_0x206000D:
 	CBI  0x1B,6
-_0x204000E:
+_0x206000E:
 	LD   R30,Y
 	ANDI R30,LOW(0x40)
-	BREQ _0x204000F
+	BREQ _0x206000F
 	SBI  0x1B,5
-	RJMP _0x2040010
-_0x204000F:
+	RJMP _0x2060010
+_0x206000F:
 	CBI  0x1B,5
-_0x2040010:
+_0x2060010:
 	LD   R30,Y
 	ANDI R30,LOW(0x80)
-	BREQ _0x2040011
+	BREQ _0x2060011
 	SBI  0x1B,4
-	RJMP _0x2040012
-_0x2040011:
+	RJMP _0x2060012
+_0x2060011:
 	CBI  0x1B,4
-_0x2040012:
-	RCALL _st7920_delay_G102
+_0x2060012:
+	RCALL _st7920_delay_G103
 	CBI  0x15,2
-	RJMP _0x2180002
+	RJMP _0x21A0002
 ; .FEND
-_st7920_busy_G102:
-; .FSTART _st7920_busy_G102
+_st7920_busy_G103:
+; .FSTART _st7920_busy_G103
 	CBI  0x15,0
 	SBI  0x15,1
 	CBI  0x14,4
@@ -1687,10 +1900,10 @@ _st7920_busy_G102:
 	CBI  0x1A,5
 	CBI  0x1A,4
 	SBI  0x15,2
-	RCALL _st7920_delay_G102
-_0x204001B:
+	RCALL _st7920_delay_G103
+_0x206001B:
 	SBIC 0x19,4
-	RJMP _0x204001B
+	RJMP _0x206001B
 	CBI  0x15,2
 	__DELAY_USB 5
 	RET
@@ -1698,22 +1911,22 @@ _0x204001B:
 _st7920_wrdata:
 ; .FSTART _st7920_wrdata
 	ST   -Y,R26
-	RCALL _st7920_busy_G102
+	RCALL _st7920_busy_G103
 	SBI  0x15,0
 	LD   R26,Y
-	RCALL _st7920_wrbus_G102
-	RJMP _0x2180002
+	RCALL _st7920_wrbus_G103
+	RJMP _0x21A0002
 ; .FEND
 _st7920_wrcmd:
 ; .FSTART _st7920_wrcmd
 	ST   -Y,R26
-	RCALL _st7920_busy_G102
+	RCALL _st7920_busy_G103
 	LD   R26,Y
-	RCALL _st7920_wrbus_G102
-	RJMP _0x2180002
+	RCALL _st7920_wrbus_G103
+	RJMP _0x21A0002
 ; .FEND
-_st7920_setxy_G102:
-; .FSTART _st7920_setxy_G102
+_st7920_setxy_G103:
+; .FSTART _st7920_setxy_G103
 	ST   -Y,R26
 	LD   R30,Y
 	ANDI R30,LOW(0x1F)
@@ -1722,18 +1935,18 @@ _st7920_setxy_G102:
 	RCALL _st7920_wrcmd
 	LD   R26,Y
 	CPI  R26,LOW(0x20)
-	BRLO _0x204001E
+	BRLO _0x206001E
 	LDD  R30,Y+1
 	ORI  R30,0x80
 	STD  Y+1,R30
-_0x204001E:
+_0x206001E:
 	LDD  R30,Y+1
 	SWAP R30
 	ANDI R30,0xF
 	ORI  R30,0x80
 	MOV  R26,R30
 	RCALL _st7920_wrcmd
-	RJMP _0x2180001
+	RJMP _0x21A0001
 ; .FEND
 _glcd_display:
 ; .FSTART _glcd_display
@@ -1741,26 +1954,26 @@ _glcd_display:
 	CALL SUBOPT_0x0
 	LD   R30,Y
 	CPI  R30,0
-	BREQ _0x204001F
+	BREQ _0x206001F
 	LDI  R30,LOW(12)
-	RJMP _0x2040020
-_0x204001F:
+	RJMP _0x2060020
+_0x206001F:
 	LDI  R30,LOW(8)
-_0x2040020:
+_0x2060020:
 	MOV  R26,R30
 	RCALL _st7920_wrcmd
 	LD   R30,Y
 	CPI  R30,0
-	BREQ _0x2040022
+	BREQ _0x2060022
 	LDI  R30,LOW(2)
-	RJMP _0x2040023
-_0x2040022:
+	RJMP _0x2060023
+_0x2060022:
 	LDI  R30,LOW(0)
-_0x2040023:
-	STS  _st7920_graphics_on_G102,R30
+_0x2060023:
+	STS  _st7920_graphics_on_G103,R30
 	CALL SUBOPT_0x0
 	CALL SUBOPT_0x1
-_0x2180002:
+_0x21A0002:
 	ADIW R28,1
 	RET
 ; .FEND
@@ -1770,31 +1983,31 @@ _glcd_cleargraphics:
 	LDI  R19,0
 	__GETB1MN _glcd_state,1
 	CPI  R30,0
-	BREQ _0x2040025
+	BREQ _0x2060025
 	LDI  R19,LOW(255)
-_0x2040025:
+_0x2060025:
 	CALL SUBOPT_0x1
 	LDI  R16,LOW(0)
-_0x2040026:
+_0x2060026:
 	CPI  R16,64
-	BRSH _0x2040028
+	BRSH _0x2060028
 	LDI  R30,LOW(0)
 	ST   -Y,R30
 	MOV  R26,R16
 	SUBI R16,-1
-	RCALL _st7920_setxy_G102
+	RCALL _st7920_setxy_G103
 	LDI  R17,LOW(16)
-_0x2040029:
+_0x2060029:
 	MOV  R30,R17
 	SUBI R17,1
 	CPI  R30,0
-	BREQ _0x204002B
+	BREQ _0x206002B
 	MOV  R26,R19
 	RCALL _st7920_wrdata
-	RJMP _0x2040029
-_0x204002B:
-	RJMP _0x2040026
-_0x2040028:
+	RJMP _0x2060029
+_0x206002B:
+	RJMP _0x2060026
+_0x2060028:
 	LDI  R30,LOW(0)
 	ST   -Y,R30
 	LDI  R26,LOW(0)
@@ -1828,7 +2041,7 @@ _glcd_init:
 	CALL SUBOPT_0x2
 	CALL SUBOPT_0x2
 	LDI  R26,LOW(8)
-	RCALL _st7920_wrbus_G102
+	RCALL _st7920_wrbus_G103
 	__DELAY_USW 800
 	LDI  R26,LOW(1)
 	RCALL _st7920_wrcmd
@@ -1836,8 +2049,8 @@ _glcd_init:
 	LDI  R27,0
 	CALL _delay_ms
 	LDI  R30,LOW(0)
-	STS  _yt_G102,R30
-	STS  _xt_G102,R30
+	STS  _yt_G103,R30
+	STS  _xt_G103,R30
 	LDI  R26,LOW(6)
 	RCALL _st7920_wrcmd
 	LDI  R26,LOW(52)
@@ -1847,7 +2060,7 @@ _glcd_init:
 	LDI  R26,LOW(2)
 	RCALL _st7920_wrcmd
 	LDI  R30,LOW(0)
-	STS  _st7920_graphics_on_G102,R30
+	STS  _st7920_graphics_on_G103,R30
 	RCALL _glcd_cleargraphics
 	LDI  R26,LOW(1)
 	RCALL _glcd_display
@@ -1861,7 +2074,7 @@ _glcd_init:
 	LD   R30,Y
 	LDD  R31,Y+1
 	SBIW R30,0
-	BREQ _0x204002C
+	BREQ _0x206002C
 	LD   R26,Y
 	LDD  R27,Y+1
 	CALL __GETW1P
@@ -1873,13 +2086,13 @@ _glcd_init:
 	LDD  R27,Y+1
 	ADIW R26,4
 	CALL __GETW1P
-	RJMP _0x20400BB
-_0x204002C:
+	RJMP _0x20600BB
+_0x206002C:
 	LDI  R30,LOW(0)
 	LDI  R31,HIGH(0)
 	__PUTW1MN _glcd_state,4
 	__PUTW1MN _glcd_state,25
-_0x20400BB:
+_0x20600BB:
 	__PUTW1MN _glcd_state,27
 	LDI  R30,LOW(1)
 	__PUTB1MN _glcd_state,8
@@ -1896,53 +2109,53 @@ _0x20400BB:
 	LDI  R27,0
 	CALL _memset
 	LDI  R30,LOW(1)
-	RJMP _0x2180001
+	RJMP _0x21A0001
 ; .FEND
 
 	.CSEG
 _glcd_clipx:
 ; .FSTART _glcd_clipx
 	CALL SUBOPT_0x3
-	BRLT _0x2060003
+	BRLT _0x2080003
 	LDI  R30,LOW(0)
 	LDI  R31,HIGH(0)
-	RJMP _0x2180001
-_0x2060003:
+	RJMP _0x21A0001
+_0x2080003:
 	LD   R26,Y
 	LDD  R27,Y+1
 	CPI  R26,LOW(0x80)
 	LDI  R30,HIGH(0x80)
 	CPC  R27,R30
-	BRLT _0x2060004
+	BRLT _0x2080004
 	LDI  R30,LOW(127)
 	LDI  R31,HIGH(127)
-	RJMP _0x2180001
-_0x2060004:
+	RJMP _0x21A0001
+_0x2080004:
 	LD   R30,Y
 	LDD  R31,Y+1
-	RJMP _0x2180001
+	RJMP _0x21A0001
 ; .FEND
 _glcd_clipy:
 ; .FSTART _glcd_clipy
 	CALL SUBOPT_0x3
-	BRLT _0x2060005
+	BRLT _0x2080005
 	LDI  R30,LOW(0)
 	LDI  R31,HIGH(0)
-	RJMP _0x2180001
-_0x2060005:
+	RJMP _0x21A0001
+_0x2080005:
 	LD   R26,Y
 	LDD  R27,Y+1
 	CPI  R26,LOW(0x40)
 	LDI  R30,HIGH(0x40)
 	CPC  R27,R30
-	BRLT _0x2060006
+	BRLT _0x2080006
 	LDI  R30,LOW(63)
 	LDI  R31,HIGH(63)
-	RJMP _0x2180001
-_0x2060006:
+	RJMP _0x21A0001
+_0x2080006:
 	LD   R30,Y
 	LDD  R31,Y+1
-	RJMP _0x2180001
+	RJMP _0x21A0001
 ; .FEND
 _glcd_moveto:
 ; .FSTART _glcd_moveto
@@ -1955,7 +2168,7 @@ _glcd_moveto:
 	CLR  R27
 	RCALL _glcd_clipy
 	__PUTB1MN _glcd_state,3
-_0x2180001:
+_0x21A0001:
 	ADIW R28,2
 	RET
 ; .FEND
@@ -2004,9 +2217,9 @@ memset1:
 
 	.CSEG
 
-	.DSEG
-
 	.CSEG
+
+	.DSEG
 
 	.CSEG
 
@@ -2015,28 +2228,34 @@ ___ds18b20_scratch_pad:
 	.BYTE 0x9
 _glcd_state:
 	.BYTE 0x1D
-_st7920_graphics_on_G102:
+
+	.ESEG
+_mTempSet:
 	.BYTE 0x1
-_st7920_bits8_15_G102:
+
+	.DSEG
+_st7920_graphics_on_G103:
 	.BYTE 0x1
-_xt_G102:
+_st7920_bits8_15_G103:
 	.BYTE 0x1
-_yt_G102:
+_xt_G103:
 	.BYTE 0x1
-__seed_G10A:
+_yt_G103:
+	.BYTE 0x1
+__seed_G10C:
 	.BYTE 0x4
 
 	.CSEG
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:1 WORDS
 SUBOPT_0x0:
-	LDS  R30,_st7920_graphics_on_G102
+	LDS  R30,_st7920_graphics_on_G103
 	ORI  R30,LOW(0x30)
 	MOV  R26,R30
 	JMP  _st7920_wrcmd
 
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:1 WORDS
 SUBOPT_0x1:
-	LDS  R30,_st7920_graphics_on_G102
+	LDS  R30,_st7920_graphics_on_G103
 	ORI  R30,LOW(0x34)
 	MOV  R26,R30
 	JMP  _st7920_wrcmd
@@ -2044,7 +2263,7 @@ SUBOPT_0x1:
 ;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:2 WORDS
 SUBOPT_0x2:
 	LDI  R26,LOW(48)
-	CALL _st7920_wrbus_G102
+	CALL _st7920_wrbus_G103
 	__DELAY_USW 800
 	RET
 
