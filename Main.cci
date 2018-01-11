@@ -1,0 +1,13 @@
+VERSION:3 SOURCE_TIMESTAMP:4C2B5EFB
+NODE:I LEVEL:0 LINE:18 "C:\cvavr\inc\mega32a.h"
+NODE:I LEVEL:0 LINE:20 "C:\cvavr\inc\i2c.h"
+NODE:I LEVEL:0 LINE:22 "C:\cvavr\inc\ds1307.h"
+NODE:I LEVEL:0 LINE:24 "C:\cvavr\inc\1wire.h"
+NODE:I LEVEL:0 LINE:26 "C:\cvavr\inc\ds18b20.h"
+NODE:I LEVEL:0 LINE:28 "C:\cvavr\inc\glcd.h"
+NODE:I LEVEL:0 LINE:31 "C:\cvavr\inc\font5x7.h"
+NODE:I LEVEL:0 LINE:33 "G:\TAM\K\AVR\May Say V2 PCB AT32A\LIB\exlib.h"
+NODE:I LEVEL:0 LINE:35 "DHT.h"
+NODE:F LEVEL:0 LINE:39 "ext_int0_isr(void)"
+NODE:F LEVEL:0 LINE:46 "timer0_ovf_isr(void)"
+NODE:F LEVEL:0 LINE:52 "main(void)"
