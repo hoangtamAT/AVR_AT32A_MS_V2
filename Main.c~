@@ -222,12 +222,12 @@ void tempDisplay(unsigned char x, unsigned char y)
     humidity=DHT_GetTemHumi(DHT_DA);
     //#asm("sei"); 
     sprintf(lcdBuff,"T:%2.0f",temperature);
-    glcd_outtextxyf(x,y+3,lcdBuff);
+    glcd_outtextxy(x,y+3,lcdBuff);
     glcd_outtextxyf(x+25,y,"o");
     glcd_outtextxyf(x+32,y+3,"C");
           
     sprintf(lcdBuff,"H:%2.0f",humidity);
-    glcd_outtextxyf(x,y+13,lcdBuff);
+    glcd_outtextxy(x,y+13,lcdBuff);
     glcd_outtextxyf(x+25,y+13,"%");
 }
 

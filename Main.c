@@ -44,8 +44,11 @@ Data Stack size         : 512
 // Declare your global variables here
 unsigned char hour,minute,sec;
 eeprom unsigned char mTempSet;
+unsigned char time1, min1=0;
 
 /*******************  FUNCTION  *****************************/
+void timer1DeInit();
+void timer1Init();
 void getTime();
 void tempDisplay(unsigned char x, unsigned char y);
 void timeSettingDisplay(unsigned char x, unsigned char y);
@@ -65,7 +68,12 @@ interrupt [EXT_INT0] void ext_int0_isr(void)
 
 interrupt [TIM1_OVF] void timer1_ovf_isr(void)
 {
-// Place your code here
+   time1++;
+   if(time1>55)
+   {
+     min1++; 
+     time1=0;
+   } 
 
 }
 
@@ -196,6 +204,76 @@ while (1)
 }
 
 /******************  FUNCTION  *******************************/
+/**
+    @brief: Start timer1  
+    @prama: None
+    @retval: None
+*/
+void timer1Init()
+{
+    // Timer/Counter 1 initialization
+    // Clock source: System Clock
+    // Clock value: 62.500 kHz
+    // Mode: Normal top=0xFFFF
+    // OC1A output: Disconnected
+    // OC1B output: Disconnected
+    // Noise Canceler: Off
+    // Input Capture on Falling Edge
+    // Timer Period: 1.0486 s
+    // Timer1 Overflow Interrupt: On
+    // Input Capture Interrupt: Off
+    // Compare A Match Interrupt: Off
+    // Compare B Match Interrupt: Off
+    TCCR1A=(0<<COM1A1) | (0<<COM1A0) | (0<<COM1B1) | (0<<COM1B0) | (0<<WGM11) | (0<<WGM10);
+    TCCR1B=(0<<ICNC1) | (0<<ICES1) | (0<<WGM13) | (0<<WGM12) | (1<<CS12) | (0<<CS11) | (0<<CS10);
+    TCNT1H=0x00;
+    TCNT1L=0x00;
+    ICR1H=0x00;
+    ICR1L=0x00;
+    OCR1AH=0x00;
+    OCR1AL=0x00;
+    OCR1BH=0x00;
+    OCR1BL=0x00;   
+    // enable interrupt timer1
+    TIMSK=(1<<TOIE1);
+}
+
+/**
+    @brief: Stop timer1  
+    @prama: None
+    @retval: None
+*/
+void timer1DeInit()
+{
+    // Timer/Counter 1 initialization
+    // Clock source: System Clock
+    // Clock value: 62.500 kHz
+    // Mode: Normal top=0xFFFF
+    // OC1A output: Disconnected
+    // OC1B output: Disconnected
+    // Noise Canceler: Off
+    // Input Capture on Falling Edge
+    // Timer Period: 1.0486 s
+    // Timer1 Overflow Interrupt: On
+    // Input Capture Interrupt: Off
+    // Compare A Match Interrupt: Off
+    // Compare B Match Interrupt: Off
+    TCCR1A=0;
+    TCCR1B=0;
+    TCNT1H=0x00;
+    TCNT1L=0x00;
+    ICR1H=0x00;
+    ICR1L=0x00;
+    OCR1AH=0x00;
+    OCR1AL=0x00;
+    OCR1BH=0x00;
+    OCR1BL=0x00;   
+    // enable interrupt timer1
+    TIMSK=(0<<TOIE1);      
+    min1=0;
+    time1=0;
+}
+
 
 /**
     @brief: Get real-time from DS1307  
@@ -272,23 +350,23 @@ void statusDisplay(unsigned char x, unsigned char y)
 void processOn(unsigned char tempSet)
 {   
     unsigned char Htime,Mtime,Stime;
-    bit flagTime;
+    bit flagTime=0;
     Q_N=1;   
     MOTOR=1;
-    flagTime=1;
-    if(flagTime){
-        Htime=hour;
-        Mtime=minute;
-        Stime=sec;
-        flagTime=0;
-    } 
-    while(flagTime==1);
-    if(hour==Htime && minute==Mtime+1){
+    timer1Init();  
+    while(min1==0);
+    if(min1==1){
        Q_L=1;
        M_NEN=1; 
-    }
-    if(hour==Htime && minute==Mtime+2){
-    
+    }  
+    if(min1==2){
+       VAN=1;
+       DTN=1;  
+       flagTime=1;
+       timer1DeInit();
+    }     
+    while(flagTime){
+        
     }
     
     /*when temp set > temp created by the compressor. this case,
