@@ -6,7 +6,7 @@ Author  : AT
 
 Chip type               : ATmega32A
 Program type            : Application
-AVR Core Clock frequency: 16.000000 MHz
+AVR Core Clock frequency: 8.000000 MHz
 Memory model            : Small
 External RAM size       : 0
 Data Stack size         : 512
@@ -28,7 +28,8 @@ Data Stack size         : 512
 // on the graphic display
 #include <font5x7.h>
 // library extern
-#include "LIB/exlib.h"
+#include <heat.h>
+#include <humi.h>
 // DHT library
 #include <DHT.h>
 
@@ -43,8 +44,9 @@ Data Stack size         : 512
 #define DP      PORTB.0
 // Declare your global variables here
 unsigned char hour,minute,sec;
-eeprom unsigned char mTempSet;
+eeprom unsigned char mTempSet,hourSet,minSet,tempSet;
 unsigned char time1, min1=0;
+bit flagStart=0;
 
 /*******************  FUNCTION  *****************************/
 void timer1DeInit();
@@ -53,7 +55,8 @@ void getTime();
 void tempDisplay(unsigned char x, unsigned char y);
 void timeSettingDisplay(unsigned char x, unsigned char y);
 void tempSettingDisplay(unsigned char x, unsigned char y);
-void statusDisplay(unsigned char x, unsigned char y);
+void statusDisplay();
+void themeDisplay();
 void processOn(unsigned char tempSet);
 void processOff();
 /***********************************************************/
@@ -64,12 +67,12 @@ interrupt [EXT_INT0] void ext_int0_isr(void)
 
 }
 
-// Timer 1 overflow interrupt service routine (1.0486s)
+// Timer 1 overflow interrupt service routine (2.0972s)
 
 interrupt [TIM1_OVF] void timer1_ovf_isr(void)
 {
    time1++;
-   if(time1>55)
+   if(time1>28)
    {
      min1++; 
      time1=0;
@@ -108,22 +111,21 @@ PORTC=(0<<PORTC7) | (0<<PORTC6) | (0<<PORTC5) | (0<<PORTC4) | (0<<PORTC3) | (0<<
 DDRD=(0<<DDD7) | (0<<DDD6) | (0<<DDD5) | (0<<DDD4) | (0<<DDD3) | (0<<DDD2) | (0<<DDD1) | (0<<DDD0);
 // State: Bit7=T Bit6=T Bit5=P Bit4=P Bit3=P Bit2=P Bit1=P Bit0=P 
 PORTD=(0<<PORTD7) | (0<<PORTD6) | (1<<PORTD5) | (1<<PORTD4) | (1<<PORTD3) | (1<<PORTD2) | (1<<PORTD1) | (1<<PORTD0);
-
 // Timer/Counter 1 initialization
 // Clock source: System Clock
-// Clock value: 62.500 kHz
+// Clock value: 31.250 kHz
 // Mode: Normal top=0xFFFF
 // OC1A output: Disconnected
 // OC1B output: Disconnected
 // Noise Canceler: Off
 // Input Capture on Falling Edge
-// Timer Period: 1.0486 s
+// Timer Period: 2.0972 s
 // Timer1 Overflow Interrupt: On
 // Input Capture Interrupt: Off
 // Compare A Match Interrupt: Off
 // Compare B Match Interrupt: Off
 TCCR1A=(0<<COM1A1) | (0<<COM1A0) | (0<<COM1B1) | (0<<COM1B0) | (0<<WGM11) | (0<<WGM10);
-TCCR1B=(0<<ICNC1) | (0<<ICES1) | (0<<WGM13) | (0<<WGM12) | (1<<CS12) | (0<<CS11) | (0<<CS10);
+TCCR1B=(0<<ICNC1) | (0<<ICES1) | (0<<WGM13) | (0<<WGM12) | (0<<CS12) | (0<<CS11) | (0<<CS10);
 TCNT1H=0x00;
 TCNT1L=0x00;
 ICR1H=0x00;
@@ -134,7 +136,7 @@ OCR1BH=0x00;
 OCR1BL=0x00;
 
 // Timer(s)/Counter(s) Interrupt(s) initialization
-TIMSK=(0<<OCIE2) | (0<<TOIE2) | (0<<TICIE1) | (0<<OCIE1A) | (0<<OCIE1B) | (1<<TOIE1) | (0<<OCIE0) | (0<<TOIE0);
+TIMSK=(0<<OCIE2) | (0<<TOIE2) | (0<<TICIE1) | (0<<OCIE1A) | (0<<OCIE1B) | (0<<TOIE1) | (0<<OCIE0) | (0<<TOIE0);
 
 // External Interrupt(s) initialization
 // INT0: On
@@ -196,10 +198,20 @@ glcd_init(&glcd_init_data);
 
 // Global enable interrupts
 #asm("sei")
+if(tempSet==255)
+{
+   tempSet=40;
+   hourSet=2;
+   minSet=10; 
+}
 
+themeDisplay();
+timeSettingDisplay(81,55);
+tempSettingDisplay(16,55);
+statusDisplay();
 while (1)
-      {
-
+      {  rtc_set_time(2,0,0);
+        getTime();
       }
 }
 
@@ -213,13 +225,13 @@ void timer1Init()
 {
     // Timer/Counter 1 initialization
     // Clock source: System Clock
-    // Clock value: 62.500 kHz
+    // Clock value: 31.250 kHz
     // Mode: Normal top=0xFFFF
     // OC1A output: Disconnected
     // OC1B output: Disconnected
     // Noise Canceler: Off
     // Input Capture on Falling Edge
-    // Timer Period: 1.0486 s
+    // Timer Period: 2.0972 s
     // Timer1 Overflow Interrupt: On
     // Input Capture Interrupt: Off
     // Compare A Match Interrupt: Off
@@ -299,12 +311,12 @@ void tempDisplay(unsigned char x, unsigned char y)
     temperature=DHT_GetTemHumi(DHT_ND);
     humidity=DHT_GetTemHumi(DHT_DA);
     //#asm("sei"); 
-    sprintf(lcdBuff,"T:%2.0f",temperature);
+    sprintf(lcdBuff,"T:%2.1f",temperature);
     glcd_outtextxy(x,y+3,lcdBuff);
     glcd_outtextxyf(x+25,y,"o");
     glcd_outtextxyf(x+32,y+3,"C");
           
-    sprintf(lcdBuff,"H:%2.0f",humidity);
+    sprintf(lcdBuff,"H:%2.1f",humidity);
     glcd_outtextxy(x,y+13,lcdBuff);
     glcd_outtextxyf(x+25,y+13,"%");
 }
@@ -317,7 +329,11 @@ void tempDisplay(unsigned char x, unsigned char y)
 */
 void timeSettingDisplay(unsigned char x, unsigned char y)
 {
-
+     glcd_putcharxy(x,y,48+hourSet/10);   
+     glcd_putchar(48+hourSet%10);
+     glcd_outtextf(":");
+     glcd_putchar(48+minSet/10);
+     glcd_putchar(48+minSet%10);
 }
 
 /**
@@ -328,7 +344,10 @@ void timeSettingDisplay(unsigned char x, unsigned char y)
 */
 void tempSettingDisplay(unsigned char x, unsigned char y)
 {
-
+      glcd_putcharxy(x,y,48+tempSet/10);
+      glcd_putchar(48+tempSet%10); 
+      glcd_outtextxyf(x+13,y-4,"o");
+      glcd_outtextxyf(x+20,y,"C");
 }
 
 /**
@@ -337,9 +356,33 @@ void tempSettingDisplay(unsigned char x, unsigned char y)
             - y: Vertical axis (0-63)
     @retval: None
 */
-void statusDisplay(unsigned char x, unsigned char y)
-{
+void statusDisplay()
+{    unsigned int setPercent, runPercent,percent;
 
+     setPercent = hourSet*60 + minSet;
+     runPercent = hour*60 + minute; 
+     percent = (runPercent*100)/setPercent;  
+     
+     if(flagStart) glcd_outtextxyf(5,23,">>> RUNNING <<<");   
+     else glcd_outtextxyf(20,23,">>> STOPPED <<<");
+     
+     glcd_putcharxy(15,33,48+hour/10);  
+     glcd_putchar(48+hour%10);
+     glcd_outtextf(":");  
+     glcd_putchar(48+minute/10);
+     glcd_putchar(48+minute%10);  
+     
+     glcd_outtextf("/");   
+                             
+     glcd_putchar(48+hourSet/10);
+     glcd_putchar(48+hourSet%10);
+     glcd_outtextf(":");  
+     glcd_putchar(48+minSet/10);
+     glcd_putchar(48+minSet%10);   
+     
+     glcd_putcharxy(110,33,48+percent/10);
+     glcd_putchar(48+percent%10); 
+     glcd_outtextf("%");
 }
 
 /**
@@ -406,4 +449,25 @@ void processOn(unsigned char tempSet)
 void processOff()
 {
 
+}
+
+/**
+    @brief: Display theme on all main screen                                 
+    @prama:None
+    @retval: None
+*/
+void themeDisplay()
+{
+    glcd_line(0,20,127,20);
+    glcd_line(0,41,127,41);
+    glcd_line(62,41,62,63);  
+    glcd_line(64,41,64,63);   
+    
+    glcd_line(62,3,62,16);  
+    glcd_line(64,3,64,16);
+    
+    glcd_outtextxyf(7,43,"TEMP SET");
+    glcd_outtextxyf(72,43,"TIME SET");
+    glcd_putimagef(8,6,heat,GLCD_PUTCOPY);
+    glcd_putimagef(75,6,humi,GLCD_PUTCOPY);
 }
