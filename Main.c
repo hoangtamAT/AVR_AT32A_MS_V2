@@ -27,9 +27,8 @@ Data Stack size         : 512
 // Font used for displaying text
 // on the graphic display
 #include <font5x7.h>
-// library extern
-#include <heat.h>
-#include <humi.h>
+// library Symbol
+#include <symbol.h>
 // DHT library
 #include <DHT.h>
 
@@ -45,6 +44,7 @@ Data Stack size         : 512
 // Declare your global variables here
 unsigned char hour,minute,sec;
 eeprom unsigned char mTempSet,hourSet,minSet,tempSet;
+float temperature,humidity; 
 unsigned char time1, min1=0;
 bit flagStart=0;
 
@@ -57,7 +57,7 @@ void timeSettingDisplay(unsigned char x, unsigned char y);
 void tempSettingDisplay(unsigned char x, unsigned char y);
 void statusDisplay();
 void themeDisplay();
-void processOn(unsigned char tempSet);
+void processOn();
 void processOff();
 /***********************************************************/
 // External Interrupt 0 service routine
@@ -71,6 +71,7 @@ interrupt [EXT_INT0] void ext_int0_isr(void)
 
 interrupt [TIM1_OVF] void timer1_ovf_isr(void)
 {
+   tempDisplay(0,0); 
    time1++;
    if(time1>28)
    {
@@ -200,7 +201,7 @@ glcd_init(&glcd_init_data);
 #asm("sei")
 if(tempSet==255)
 {
-   tempSet=40;
+   tempSet=30;
    hourSet=2;
    minSet=10; 
 }
@@ -208,10 +209,13 @@ if(tempSet==255)
 themeDisplay();
 timeSettingDisplay(81,55);
 tempSettingDisplay(16,55);
-statusDisplay();
+//statusDisplay(); 
+timer1Init();
 while (1)
-      {  rtc_set_time(2,0,0);
-        getTime();
+      { 
+        getTime();  
+        processOn();
+        
       }
 }
 
@@ -305,11 +309,21 @@ void getTime()
 */
 void tempDisplay(unsigned char x, unsigned char y)
 {
-    float temperature,humidity; 
-    char lcdBuff[10];  
+    char lcdBuff[10]; 
+    float nd,nd1,da,da1; 
     //#asm("cli");
-    temperature=DHT_GetTemHumi(DHT_ND);
-    humidity=DHT_GetTemHumi(DHT_DA);
+    nd=DHT_GetTemHumi(DHT_ND);
+    delay_ms(400);
+    nd1=DHT_GetTemHumi(DHT_ND1); 
+    delay_ms(200);
+    
+    da=DHT_GetTemHumi(DHT_DA);
+    delay_ms(400);
+    da1=DHT_GetTemHumi(DHT_DA1); 
+    delay_ms(200);
+    
+    temperature=((nd*256)+nd1)/10;
+    humidity=((da*256)+da1)/10;
     //#asm("sei"); 
     sprintf(lcdBuff,"T:%2.1f",temperature);
     glcd_outtextxy(x,y+3,lcdBuff);
@@ -390,9 +404,9 @@ void statusDisplay()
     @prama: tempSet: Temperature setting for control heating at this temperature
     @retval: None
 */
-void processOn(unsigned char tempSet)
+void processOn()
 {   
-    unsigned char Htime,Mtime,Stime;
+    int i;
     bit flagTime=0;
     Q_N=1;   
     MOTOR=1;
@@ -409,7 +423,17 @@ void processOn(unsigned char tempSet)
        timer1DeInit();
     }     
     while(flagTime){
-        
+       while((int)temperature > (tempSet-5) && (int)temperature<tempSet)
+       {
+        DTN=0;
+        delay_ms(500);
+        if((int)temperature > tempSet) break;
+        else{
+            DTN=1;
+            delay_ms(500);
+        }
+       } 
+       if(temperature>tempSet) DTN=0;
     }
     
     /*when temp set > temp created by the compressor. this case,
