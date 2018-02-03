@@ -7,7 +7,7 @@ unsigned char DHT_GetTemHumi (unsigned char select)
         DATA_PORT=1;
         delay_us(60);
         DATA_PORT=0;
-        delay_ms(25);
+        delay_ms(1);
         DATA_PORT=1;
         DATA_DDR=0;
         delay_us(60);
@@ -23,7 +23,7 @@ unsigned char DHT_GetTemHumi (unsigned char select)
         for(ii=0;ii<8;ii++)
         {    
         while(DATA_PIN==0);//Doi Data len 1
-        delay_us(50);
+        delay_us(40);
         if(DATA_PIN==1)
             {
             buffer[i]|=(1<<(7-ii));
