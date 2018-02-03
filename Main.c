@@ -41,39 +41,136 @@ Data Stack size         : 512
 #define M_NEN   PORTB.2 
 #define LAMP    PORTB.1 
 #define DP      PORTB.0
+
+#define BTN_SET     PINA.3
+#define BTN_MODE    PIND.0
+#define BTN_UP      PIND.1
+#define BTN_DOWN    PIND.3
+#define BTN_START   PIND.4
+#define BTN_STOP    PIND.5
 // Declare your global variables here
-unsigned char hour,minute,sec;
+unsigned char hour,minute,sec,mode,day,date,month,year,Dhour;
 eeprom unsigned char mTempSet,hourSet,minSet,tempSet;
 float temperature,humidity; 
-unsigned char time1, min1=0;
-bit flagStart=0;
+unsigned char time1, min1=0,min0;
+int time0;
+bit flagStart=0,privateSet=0,flagStop=0,timerEn=0;
 
 /*******************  FUNCTION  *****************************/
 void timer1DeInit();
 void timer1Init();
+void timer0DeInit();
+void timer0Init();
 void getTime();
-void tempDisplay(unsigned char x, unsigned char y);
+void tempDisplay();
 void timeSettingDisplay(unsigned char x, unsigned char y);
 void tempSettingDisplay(unsigned char x, unsigned char y);
 void statusDisplay();
 void themeDisplay();
 void processOn();
 void processOff();
+void mTempSetDisplay();
 /***********************************************************/
 // External Interrupt 0 service routine
 interrupt [EXT_INT0] void ext_int0_isr(void)
 {
 // Place your code here
+    if(BTN_MODE==0 && flagStart==0){ 
+           mode++;
+           if(mode>3){
+            mode=0; 
+            }            
+    }
+    
+    else if(BTN_UP==0){ 
+        
+        if(privateSet){
+            mTempSet++;
+            if(mTempSet>60) mTempSet=35;
+        }
+        else{
+            switch(mode)
+            { 
+                case 0: LAMP=~LAMP;
+                    break;
+                case 1:          
+                    tempSet++;
+                    if(tempSet>85) tempSet=20;
+                    break;
+                case 2:
+                    hourSet++;
+                    if(hourSet>48) hourSet=0;
+                    break;
+                case 3: 
+                    minSet++;
+                    if(minSet>59) minSet=0;
+                    break;
+            } 
+        }
+    }
+    else if(BTN_DOWN==0){
+        if(privateSet){
+            mTempSet--;
+            if(mTempSet<35) mTempSet=60;
+        }  
+        else{
+            switch(mode)
+            {   
+                case 0: 
+                    while(BTN_DOWN==0){
+                        while(BTN_UP==1);
+                        while(BTN_UP==0);
+                        privateSet=1;
+                        break;
+                    } 
+                    break;
+                case 1:          
+                    tempSet--;
+                    if(tempSet<20) tempSet=85;
+                    break;
+                case 2:
+                    if(hourSet==0) hourSet=48;
+                    else hourSet--;
+                    break;
+                case 3: 
+                    if(minSet==0) minSet=59;
+                    else minSet--;
+                    break;
+            } 
+        }
+    }
+    else if(BTN_START==0){
+     rtc_set_time(0,0,0);
+     rtc_set_date(1,1,1,1);  
+     flagStop=0;   
+     min1=0;
+     flagStart=1; 
+     timerEn=1;   
+     }
+    else if(BTN_STOP==0) { 
+    min0=0; 
+    flagStart=0;
+    flagStop=1;;  
+    }
 
+}
+// Timer Period: 32.768 ms
+interrupt [TIM0_OVF] void timer0_ovf_isr(void)
+{
+     time0++;
+     if(time0>1820){
+       time0=0;
+       min0++;
+     }
 }
 
 // Timer 1 overflow interrupt service routine (2.0972s)
 
 interrupt [TIM1_OVF] void timer1_ovf_isr(void)
 {
-   tempDisplay(0,0); 
+   //tempDisplay();
    time1++;
-   if(time1>28)
+   if(time1>25)
    {
      min1++; 
      time1=0;
@@ -201,20 +298,49 @@ glcd_init(&glcd_init_data);
 #asm("sei")
 if(tempSet==255)
 {
-   tempSet=30;
-   hourSet=2;
-   minSet=10; 
+   tempSet=40;
+   hourSet=1;
+   minSet=0; 
+   mTempSet=40;
 }
-
+rtc_set_time(0,0,0);
 themeDisplay();
-timeSettingDisplay(81,55);
-tempSettingDisplay(16,55);
-//statusDisplay(); 
-timer1Init();
 while (1)
       { 
-        getTime();  
-        processOn();
+        if(privateSet) mTempSetDisplay(); 
+        if(mode==0){   
+            if(flagStart){ 
+              tempDisplay(); 
+              getTime();
+              processOn();
+            } 
+            if(flagStop){
+              timer0Init();
+              processOff();
+            }
+            glcd_outtextxyf(113,55," ");
+            
+            statusDisplay(); 
+            if(mode<4){
+              timeSettingDisplay(81,55);
+              tempSettingDisplay(16,55); 
+            }
+        }  
+        else if(mode<4){      
+            timeSettingDisplay(81,55);
+            tempSettingDisplay(16,55);
+            if(mode==1) glcd_outtextxyf(8,55,"#");
+            else if(mode==2) {
+              glcd_outtextxyf(8,55," ");
+              glcd_outtextxyf(72,55,"#");
+            }  
+            else if(mode==3){
+              glcd_outtextxyf(72,55," ");
+              glcd_outtextxyf(113,55,"#");
+            }
+        }
+        
+        //processOn();
         
       }
 }
@@ -225,6 +351,28 @@ while (1)
     @prama: None
     @retval: None
 */
+void timer0Init()
+{
+// Timer/Counter 0 initialization
+// Clock source: System Clock
+// Clock value: 7.813 kHz
+// Mode: Normal top=0xFF
+// OC0 output: Disconnected
+// Timer Period: 32.768 ms
+TCCR0=(0<<WGM00) | (0<<COM01) | (0<<COM00) | (0<<WGM01) | (1<<CS02) | (0<<CS01) | (1<<CS00);
+TCNT0=0x00;
+OCR0=0x00;
+ // enable interrupt timer0
+    TIMSK=(1<<TOIE0);
+}
+void timer0DeInit()
+{
+TCCR0=(0<<WGM00) | (0<<COM01) | (0<<COM00) | (0<<WGM01) | (0<<CS02) | (0<<CS01) | (0<<CS00);
+TCNT0=0x00;
+OCR0=0x00;
+min0=0;
+TIMSK=(0<<TOIE0);      
+}
 void timer1Init()
 {
     // Timer/Counter 1 initialization
@@ -261,19 +409,6 @@ void timer1Init()
 */
 void timer1DeInit()
 {
-    // Timer/Counter 1 initialization
-    // Clock source: System Clock
-    // Clock value: 62.500 kHz
-    // Mode: Normal top=0xFFFF
-    // OC1A output: Disconnected
-    // OC1B output: Disconnected
-    // Noise Canceler: Off
-    // Input Capture on Falling Edge
-    // Timer Period: 1.0486 s
-    // Timer1 Overflow Interrupt: On
-    // Input Capture Interrupt: Off
-    // Compare A Match Interrupt: Off
-    // Compare B Match Interrupt: Off
     TCCR1A=0;
     TCCR1B=0;
     TCNT1H=0x00;
@@ -283,11 +418,12 @@ void timer1DeInit()
     OCR1AH=0x00;
     OCR1AL=0x00;
     OCR1BH=0x00;
-    OCR1BL=0x00;   
-    // enable interrupt timer1
-    TIMSK=(0<<TOIE1);      
+    OCR1BL=0x00;  
     min1=0;
-    time1=0;
+    time1=0; 
+    timerEn=0;
+    // disable interrupt timer1
+    TIMSK=(0<<TOIE1);      
 }
 
 
@@ -298,7 +434,8 @@ void timer1DeInit()
 */
 void getTime()
 {
-    rtc_get_time(&hour,&minute,&sec);
+    rtc_get_time(&hour,&minute,&sec);    
+    rtc_get_date(&day,&date,&month,&year);
 }
 
 /**
@@ -307,32 +444,33 @@ void getTime()
             - y: Vertical axis (0-63)
     @retval: None
 */
-void tempDisplay(unsigned char x, unsigned char y)
+void tempDisplay()
 {
-    char lcdBuff[10]; 
+    char lcdBuff[10],lcdBuff1[10]; 
     float nd,nd1,da,da1; 
-    //#asm("cli");
+   // #asm("cli");
     nd=DHT_GetTemHumi(DHT_ND);
-    delay_ms(400);
+    delay_ms(500);
     nd1=DHT_GetTemHumi(DHT_ND1); 
-    delay_ms(200);
+    delay_ms(500);   
+    temperature=((nd*256)+nd1)/10; 
+    sprintf(lcdBuff,"%2.1f",temperature);
+    glcd_outtextxy(30,5,lcdBuff);
+    glcd_outtextxyf(54,2,"o");
+    glcd_outtextxyf(60,5,"C");
     
     da=DHT_GetTemHumi(DHT_DA);
-    delay_ms(400);
+    delay_ms(500);
     da1=DHT_GetTemHumi(DHT_DA1); 
-    delay_ms(200);
-    
-    temperature=((nd*256)+nd1)/10;
-    humidity=((da*256)+da1)/10;
-    //#asm("sei"); 
-    sprintf(lcdBuff,"T:%2.1f",temperature);
-    glcd_outtextxy(x,y+3,lcdBuff);
-    glcd_outtextxyf(x+25,y,"o");
-    glcd_outtextxyf(x+32,y+3,"C");
+    delay_ms(500);
+    humidity=((da*256)+da1)/10;    
+    sprintf(lcdBuff1,"%2.1f",humidity);
+    glcd_outtextxy(93,5,lcdBuff1);
+    glcd_outtextf("%");
+   // #asm("sei"); 
+
           
-    sprintf(lcdBuff,"H:%2.1f",humidity);
-    glcd_outtextxy(x,y+13,lcdBuff);
-    glcd_outtextxyf(x+25,y+13,"%");
+
 }
 
 /**
@@ -372,31 +510,47 @@ void tempSettingDisplay(unsigned char x, unsigned char y)
 */
 void statusDisplay()
 {    unsigned int setPercent, runPercent,percent;
+     
+     Dhour=24*(date-1)+hour;
 
      setPercent = hourSet*60 + minSet;
      runPercent = hour*60 + minute; 
      percent = (runPercent*100)/setPercent;  
      
-     if(flagStart) glcd_outtextxyf(5,23,">>> RUNNING <<<");   
-     else glcd_outtextxyf(20,23,">>> STOPPED <<<");
+     if(flagStart){
+         glcd_outtextxyf(20,20,">>> RUNNING <<<"); 
+         glcd_putcharxy(5,31,48+Dhour/10);  
+         glcd_putchar(48+Dhour%10);
+         glcd_outtextf(":");  
+         glcd_putchar(48+minute/10);
+         glcd_putchar(48+minute%10);  
+         
+         glcd_outtextf("/");   
+                                 
+         glcd_putchar(48+hourSet/10);
+         glcd_putchar(48+hourSet%10);
+         glcd_outtextf(":");  
+         glcd_putchar(48+minSet/10);
+         glcd_putchar(48+minSet%10);   
+         
+         if(percent<100)
+         { 
+         glcd_outtextxyf(99,31," ");
+         glcd_putchar(48+percent/10);
+         glcd_putchar(48+percent%10); 
+         glcd_outtextf("%");   
+         }
+         else{
+           glcd_outtextxyf(99,31,"100%"); 
+         }
+     }  
+     else if(mode<4){
+        glcd_outtextxyf(20,20,">>> STOPPED <<<");  
+        glcd_outtextxyf(5,31,"           ");
+        glcd_outtextxyf(99,31,"    ");
+      }
      
-     glcd_putcharxy(15,33,48+hour/10);  
-     glcd_putchar(48+hour%10);
-     glcd_outtextf(":");  
-     glcd_putchar(48+minute/10);
-     glcd_putchar(48+minute%10);  
      
-     glcd_outtextf("/");   
-                             
-     glcd_putchar(48+hourSet/10);
-     glcd_putchar(48+hourSet%10);
-     glcd_outtextf(":");  
-     glcd_putchar(48+minSet/10);
-     glcd_putchar(48+minSet%10);   
-     
-     glcd_putcharxy(110,33,48+percent/10);
-     glcd_putchar(48+percent%10); 
-     glcd_outtextf("%");
 }
 
 /**
@@ -406,65 +560,78 @@ void statusDisplay()
 */
 void processOn()
 {   
-    int i;
-    bit flagTime=0;
-    Q_N=1;   
-    MOTOR=1;
-    timer1Init();  
-    while(min1==0);
-    if(min1==1){
-       Q_L=1;
-       M_NEN=1; 
-    }  
-    if(min1==2){
-       VAN=1;
-       DTN=1;  
-       flagTime=1;
-       timer1DeInit();
-    }     
-    while(flagTime){
-       while((int)temperature > (tempSet-5) && (int)temperature<tempSet)
-       {
-        DTN=0;
-        delay_ms(500);
-        if((int)temperature > tempSet) break;
-        else{
-            DTN=1;
-            delay_ms(500);
-        }
-       } 
-       if(temperature>tempSet) DTN=0;
-    }
+    bit flagTime=0,flagss=0;  
     
-    /*when temp set > temp created by the compressor. this case,
-     the compressor is always turn ON, this time just control heat resistance. 
-    */ 
-    if(tempSet>mTempSet){
-       
-       if(minute>=1){
-          Q_L=1;
-          M_NEN=1;
-          if(minute>=2){
-            VAN=1;
-            DTN=1; 
-          }
-       }
+    if(Dhour==hourSet && minute==minSet){
+     flagStop=1;
+     flagStart=0;      
+     }
+    else
+    {
+        /*****************************************/ 
+        if(tempSet>mTempSet)
+        {
+            Q_N=1;   
+            MOTOR=1;
+            timer1Init();  
+            if(min1==1){
+               Q_L=1;
+               M_NEN=1; 
+            }  
+            if(min1==2){
+               VAN=1;
+               DTN=1;  
+               flagTime=1;
+               timer1DeInit();
+            }   
+            if(flagTime){
+                if(temperature>(tempSet-1)){
+                 DTN=0; 
+                 flagss=1;   
+                }
+                else if(flagss==1){
+                      if(temperature<(tempSet-2)) DTN=1;
+                    } else if(temperature < tempSet) DTN=1;                                 
+                
+            }
+        }else
+        {
+            Q_N=1;   
+            MOTOR=1;
+            DTN=0;
+            if(flagss==0 && temperature<tempSet)
+            {
+                timer1Init();
+                timer0DeInit();  
+                if(min1==1){
+                   Q_L=1;
+                   M_NEN=1; 
+                }  
+                if(min1==2){
+                   VAN=1;
+                   DTN=1; 
+                   flagss=1; 
+                   timer1DeInit();  
+                   
+                }   
+            }
+            else{
+                 if(temperature>=tempSet && flagss==1){
+                    VAN=0; 
+                    timer0Init(); 
+                    timer1DeInit();
+                    if(min0==1){
+                        M_NEN=0;      
+                        flagss=0;
+                        timer0DeInit();
+                    }
+                } 
+            }
+            
+        }
+        /*******************************************/ 
     } 
-    /*when temp set < temp created by the compressor. this case,
-     the heat resistance is always turn OFF, this time just control the compressor. 
-    */
-    else{
-       DTN=0;
-       if(minute>=1){
-            Q_L=1;
-            M_NEN=1;
-            if(minute>=2){
-            VAN=1; 
-          }
-       }
-    }
 }
-
 /**
     @brief: Process turn OFF device sequence by setting 
     @prama:
@@ -472,7 +639,22 @@ void processOn()
 */
 void processOff()
 {
-
+   DTN=0;
+   VAN=0;
+   if(min0==1) Q_N=0;
+   if(min0==2){
+        MOTOR=0;
+        M_NEN=0;
+        Q_L=0;
+        LAMP=1;
+        mode=10;  
+        glcd_clear();
+        delay_ms(500);
+        glcd_outtextxyf(32,5,"HOAN THANH!");
+        glcd_outtextxyf(30,35,"NHAN 'RESET'"); 
+        glcd_outtextxyf(15,50,"DE KHOI DONG LAI");     
+        timer0DeInit();
+   }
 }
 
 /**
@@ -482,16 +664,22 @@ void processOff()
 */
 void themeDisplay()
 {
-    glcd_line(0,20,127,20);
+    glcd_line(0,16,127,16);
     glcd_line(0,41,127,41);
     glcd_line(62,41,62,63);  
     glcd_line(64,41,64,63);   
     
-    glcd_line(62,3,62,16);  
-    glcd_line(64,3,64,16);
+//    glcd_line(62,3,62,16);  
+//    glcd_line(64,3,64,16);
     
     glcd_outtextxyf(7,43,"TEMP SET");
     glcd_outtextxyf(72,43,"TIME SET");
-    glcd_putimagef(8,6,heat,GLCD_PUTCOPY);
-    glcd_putimagef(75,6,humi,GLCD_PUTCOPY);
+    glcd_putimagef(2,3,heat,GLCD_PUTCOPY);
+    glcd_putimagef(73,3,humi,GLCD_PUTCOPY);
+}
+
+void mTempSetDisplay()
+{
+    glcd_putcharxy(113,22,48+mTempSet/10);
+    glcd_putchar(48+mTempSet%10);
 }
